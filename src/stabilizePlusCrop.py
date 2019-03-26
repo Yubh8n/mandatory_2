@@ -149,8 +149,13 @@ class receiver:
         contours, hierarchy = cv2.findContours(fgmask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         for i in range(1,np.alen(contours)):
             if cv2.contourArea(contours[i]) > 300:
-                cnt = contours[i]
-                cv2.drawContours(image, [cnt], 0, (0, 255, 0), 3)
+                M = cv2.moments(contours[i])
+                cX = int(M["m10"] / M["m00"])
+                cY = int(M["m01"] / M["m00"])
+                cv2.circle(image, (cX, cY), 7, (0, 0, 255), -1)
+                cv2.putText(image, "center", (cX - 20, cY - 20),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+                #cv2.drawContours(image, contours[i], 0, (0, 255, 0), 3)
                 #print(cv2.contourArea(cnt))
         fgmask = cv2.merge((fgmask,fgmask,fgmask))
         fgmask = np.hstack((fgmask,image))

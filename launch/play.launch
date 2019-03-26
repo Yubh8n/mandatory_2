@@ -3,7 +3,7 @@
     <arg name="camera_name" value="data_provider" />
 
     <arg name="fps" value="30" />
-    <arg name="video_stream_provider" value="$(find video_stabilizer_node)/data/test.mp4" /> 
+    <arg name="video_stream_provider" value="$(find video_stabilizer_node)/data/youtube_test.mp4" /> 
   </include>
  
   <node name="StabilizeAndCrop" pkg="mandatory_2" type="stabilizePlusCrop.py" output="screen">

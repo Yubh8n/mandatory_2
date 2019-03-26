@@ -146,11 +146,14 @@ class receiver:
         res = cv2.bitwise_and(image, mask_3chan)
         fgmask = fgbg.apply(res)
         fgmask = cv2.morphologyEx(fgmask, cv2.MORPH_CLOSE, kernel)
-        contours, hierarchy = cv2.findContours(fgmask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        contours = cv2.drawContours(fgmask, contours, -1, (0,0,255),2)
-        #res1 = cv2.merge((res, res, res))
-        #res = cv2.bitwise_and(image, res1)
-        #results = np.hstack((fgmask,image))
+        contours, hierarchy = cv2.findContours(fgmask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        for i in range(1,np.alen(contours)):
+            if cv2.contourArea(contours[i]) > 300:
+                cnt = contours[i]
+                cv2.drawContours(image, [cnt], 0, (0, 255, 0), 3)
+                #print(cv2.contourArea(cnt))
+        fgmask = cv2.merge((fgmask,fgmask,fgmask))
+        fgmask = np.hstack((fgmask,image))
         self.showImage(fgmask)
 
     def showImage(self, image):

@@ -9,6 +9,7 @@ import rosbag as bag
 from std_msgs.msg import Int32
 from mandatory_2.msg import Num
 from mandatory_2.msg import Car_values
+from filterpy import kalman
 
 roslib.load_manifest('mandatory_2')
 
@@ -22,7 +23,7 @@ class kalman_filter:
     def callback(self, data):
         result.x = data.x
         result.y = data.y
-        rospy.loginfo("X: " + str(result.x) + " Y: " + str(result.y))
+        #rospy.loginfo("X: " + str(result.x) + " Y: " + str(result.y))
 
 
 def main(args):

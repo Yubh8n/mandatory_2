@@ -12,6 +12,7 @@ from std_msgs.msg import Int32
 roslib.load_manifest('mandatory_2')
 from mandatory_2.msg import Num
 from mandatory_2.msg import Car_values
+import math
 
 
 fgbg = cv2.createBackgroundSubtractorKNN()
@@ -85,6 +86,9 @@ class receiver:
         self.bridge = CvBridge()
         self.image_pub = rospy.Publisher("analyzed_image", Car_values, queue_size=10)
 
+        self.previmg = 0
+        self.first_run = True
+
 
     def homo_compose_a(self, img_points):
         A = []
@@ -121,16 +125,24 @@ class receiver:
             cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
         except CvBridgeError as e:
             print(e)
-
+        #print(cv_image.shape)
+        #print(cv_image.dtype)
         cv_image = self.analyze_image(cv_image)
 
         H = self.homography_transform(bb_img, bb_obj)
         width, height, colors = np.shape(cv_image)
         warp = cv2.warpPerspective(cv_image, H, (height, width))
-
-        image = self.backgroundsubtractor(warp)
-        #self.showImage(image)
-
+        #image = self.backgroundsubtractor(warp, cv_image)
+        warp = self.createMask(warp)
+        if self.first_run:
+            self.first_run = False
+            self.previmg = warp
+            self.hsv = np.zeros_like(warp)
+            self.hsv[..., 1] = 255
+        else:
+            self.opticalFlow(warp, self.previmg)
+            self.previmg = warp
+        self.showImage("org_img", warp)
 
     # Stabilize image
     def analyze_image(self, image):
@@ -146,6 +158,7 @@ class receiver:
         cv2.line(BWimage, (100, 1000), (310, 500), (255, 255, 255), 130)
         cv2.line(BWimage, (310, 500), (310, 200), (255, 255, 255), 130)
         cv2.line(BWimage, (310, 200), (350, 70), (255, 255, 255), 130)
+        BWimage = cv2.bitwise_and(BWimage,image)
         return BWimage
 
     # Remove the background
@@ -157,37 +170,46 @@ class receiver:
 
     # Mark all cars in the original image
     def mark_cars(self, image, contours):
-        for i in range(1, np.alen(contours)):
+        for i in range(0, np.alen(contours)):
             if cv2.contourArea(contours[i]) > 200:
-                M = cv2.moments(contours[i])
-                cX = int(M["m10"] / M["m00"])
-                cY = int(M["m01"] / M["m00"])
+                m1 = cv2.moments(contours[i])
+                cX = int(m1["m10"] / m1["m00"])
+                cY = int(m1["m01"] / m1["m00"])
                 cv2.circle(image, (cX, cY), 7, (0, 0, 255), -1)
                 cv2.putText(image, "X: " + str(cX) + " Y: " + str(cY), (cX - 20, cY - 20),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
                 a.x = cX
                 a.y = cY
-                a.area = cv2.contourArea(contours[i])
+                #a.area = cv2.contourArea(contours[i])
                 self.image_pub.publish(a)
         return image
 
     # Remove the background and mark the original image
     # plot both the masked and background subtracted image together with the original image with marks
-    def backgroundsubtractor(self, image):
+    def backgroundsubtractor(self, image, original_image):
 
         mask_3chan = self.createMask(image)
         subtracted = self.remove_background(image, mask_3chan)
         contours, hierarchy = cv2.findContours(subtracted, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         marked_image = self.mark_cars(image, contours)
-
         binary_result = cv2.merge((subtracted, subtracted, subtracted))
-        fgmask = np.hstack((binary_result, marked_image))
-        return fgmask
+        #fgmask = np.hstack((binary_result, marked_image))
+        return binary_result
+    def opticalFlow(self, current_image, prev_image):
+        next = cv2.cvtColor(current_image, cv2.COLOR_BGR2GRAY)
+        prvs = cv2.cvtColor(prev_image, cv2.COLOR_BGR2GRAY)
 
-    def showImage(self, image):
-        cv2.namedWindow("Image window", cv2.WINDOW_NORMAL)
-        cv2.resizeWindow("Image window", (1188 - 758, 600))
-        cv2.imshow("Image window", image)
+        flow = cv2.calcOpticalFlowFarneback(prvs, next, None, 0.5, 3, 15, 3, 5, 1.2, 0)
+        mag, ang = cv2.cartToPolar(flow[..., 0], flow[..., 1])
+        self.hsv[..., 0] = ang * 180 / np.pi / 2
+        self.hsv[..., 2] = cv2.normalize(mag, None, 0, 255, cv2.NORM_MINMAX)
+        bgr = cv2.cvtColor(self.hsv, cv2.COLOR_HSV2BGR)
+
+        self.showImage("optical_flow",bgr)
+    def showImage(self, window_name, image):
+        cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
+        cv2.resizeWindow(window_name, (1188 - 758, 600))
+        cv2.imshow(window_name, image)
         cv2.waitKey(1)
 
 def main(args):

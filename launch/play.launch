@@ -9,5 +9,7 @@
   <node name="StabilizeAndCrop" pkg="mandatory_2" type="stabilizePlusCrop.py" output="screen">
     <remap from="image_raw" to="/data_provider/image_raw" />
   </node>
+  <node name="kalman_filtering" pkg="mandatory_2" type="kalman.py" output="screen" />
+  
 
 </launch>

@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="758d9d99-3786-4ea4-9851-9bc0638fa479" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../launch/play.launch" beforeDir="false" afterPath="$PROJECT_DIR$/../launch/play.launch" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../package.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../package.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/imageImport.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/receiver.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kalman.py" beforeDir="false" afterPath="$PROJECT_DIR$/kalman.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/stabilizePlusCrop.py" beforeDir="false" afterPath="$PROJECT_DIR$/stabilizePlusCrop.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -14,11 +17,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/stabilizePlusCrop.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="153" column="29" selection-start-line="153" selection-start-column="29" selection-end-line="153" selection-end-column="29" />
+            <state relative-caret-position="-1935">
+              <caret line="15" column="42" lean-forward="true" selection-start-line="15" selection-start-column="42" selection-end-line="15" selection-end-column="42" />
               <folding>
                 <element signature="e#22#59#0" expanded="true" />
               </folding>
@@ -26,25 +29,13 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/Git/RoVi2/VideoAnalysis/Lecture10.py">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/kalman.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1980">
-              <caret line="133" selection-start-line="133" selection-end-line="135" selection-end-column="58" />
+            <state relative-caret-position="337">
+              <caret line="23" column="30" selection-start-line="23" selection-start-column="30" selection-end-line="23" selection-end-column="30" />
               <folding>
-                <element signature="e#0#18#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/Git/RoVi2/PumpkinProject/venv/Test.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="840">
-              <caret line="60" column="93" selection-start-line="60" selection-start-column="93" selection-end-line="61" selection-end-column="56" />
-              <folding>
-                <element signature="e#0#10#0" expanded="true" />
+                <element signature="e#22#59#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -69,6 +60,7 @@
         <option value="$PROJECT_DIR$/receiver.py" />
         <option value="$USER_HOME$/Git/RoVi2/PumpkinProject/venv/Test.py" />
         <option value="$PROJECT_DIR$/stabilizePlusCrop.py" />
+        <option value="$PROJECT_DIR$/kalman.py" />
       </list>
     </option>
   </component>
@@ -91,11 +83,6 @@
             <path>
               <item name="src" type="b2602c69:ProjectViewProjectNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="src" type="b2602c69:ProjectViewProjectNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="venv" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -186,7 +173,7 @@
     <frame x="67" y="25" width="1299" height="743" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20141065" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.28291535" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -227,16 +214,6 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/imageImport.py" />
     <entry file="file://$PROJECT_DIR$/receiver.py" />
-    <entry file="file://$PROJECT_DIR$/stabilizePlusCrop.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="153" column="29" selection-start-line="153" selection-start-column="29" selection-end-line="153" selection-end-column="29" />
-          <folding>
-            <element signature="e#22#59#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/Git/RoVi2/VideoAnalysis/Lecture10.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1980">
@@ -253,6 +230,26 @@
           <caret line="60" column="93" selection-start-line="60" selection-start-column="93" selection-end-line="61" selection-end-column="56" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/stabilizePlusCrop.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1935">
+          <caret line="15" column="42" lean-forward="true" selection-start-line="15" selection-start-column="42" selection-end-line="15" selection-end-column="42" />
+          <folding>
+            <element signature="e#22#59#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kalman.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="337">
+          <caret line="23" column="30" selection-start-line="23" selection-start-column="30" selection-end-line="23" selection-end-column="30" />
+          <folding>
+            <element signature="e#22#59#0" expanded="true" />
           </folding>
         </state>
       </provider>

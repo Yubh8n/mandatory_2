@@ -9,8 +9,9 @@ import rosbag as bag
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 from std_msgs.msg import Int32
-
 roslib.load_manifest('mandatory_2')
+from mandatory_2.msg import Num
+
 
 fgbg = cv2.createBackgroundSubtractorKNN()
 kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
@@ -29,7 +30,7 @@ video = bag.Bag('test.bag', 'w')
 bb_img = [obj1, obj2, obj3, obj4]
 bb_obj = [img1, img2, img3, img4]
 
-
+a = Num()
 class VideoStabilizer():
     def __init__(self):
         self.has_seen_first_frame = False
@@ -81,7 +82,7 @@ class receiver:
         self.image_sub = rospy.Subscriber("image_raw", Image, self.callback)  # Image is not the image, but image from sensor_msgs.msgs
         self.stabilizer = VideoStabilizer()
         self.bridge = CvBridge()
-        self.image_pub = rospy.Publisher("analyzed_image", Int32, queue_size=10)
+        self.image_pub = rospy.Publisher("analyzed_image", Num, queue_size=10)
 
 
     def homo_compose_a(self, img_points):
@@ -127,11 +128,8 @@ class receiver:
         warp = cv2.warpPerspective(cv_image, H, (height, width))
 
         image = self.backgroundsubtractor(warp)
-        self.showImage(image)
-        a = Int32
-        a.data = 42
+        #self.showImage(image)
 
-        self.image_pub.publish(a)
 
     # Stabilize image
     def analyze_image(self, image):
@@ -166,6 +164,9 @@ class receiver:
                 cv2.circle(image, (cX, cY), 7, (0, 0, 255), -1)
                 cv2.putText(image, "X: " + str(cX) + " Y: " + str(cY), (cX - 20, cY - 20),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+                a.x = cX
+                a.y = cY
+                self.image_pub.publish(a)
         return image
 
     # Remove the background and mark the original image

@@ -11,6 +11,7 @@ from cv_bridge import CvBridge, CvBridgeError
 from std_msgs.msg import Int32
 roslib.load_manifest('mandatory_2')
 from mandatory_2.msg import Num
+from mandatory_2.msg import Car_values
 
 
 fgbg = cv2.createBackgroundSubtractorKNN()
@@ -30,7 +31,7 @@ video = bag.Bag('test.bag', 'w')
 bb_img = [obj1, obj2, obj3, obj4]
 bb_obj = [img1, img2, img3, img4]
 
-a = Num()
+a = Car_values()
 class VideoStabilizer():
     def __init__(self):
         self.has_seen_first_frame = False
@@ -82,7 +83,7 @@ class receiver:
         self.image_sub = rospy.Subscriber("image_raw", Image, self.callback)  # Image is not the image, but image from sensor_msgs.msgs
         self.stabilizer = VideoStabilizer()
         self.bridge = CvBridge()
-        self.image_pub = rospy.Publisher("analyzed_image", Num, queue_size=10)
+        self.image_pub = rospy.Publisher("analyzed_image", Car_values, queue_size=10)
 
 
     def homo_compose_a(self, img_points):
@@ -166,6 +167,7 @@ class receiver:
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
                 a.x = cX
                 a.y = cY
+                a.area = cv2.contourArea(contours[i])
                 self.image_pub.publish(a)
         return image
 

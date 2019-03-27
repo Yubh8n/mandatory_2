@@ -8,10 +8,11 @@ import numpy as np
 import rosbag as bag
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
+from std_msgs.msg import Int32
 
 roslib.load_manifest('mandatory_2')
 
-fgbg = cv2.createBackgroundSubtractorMOG2()
+fgbg = cv2.createBackgroundSubtractorKNN()
 kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
 
 obj1 = [320, 200]
@@ -74,16 +75,14 @@ class VideoStabilizer():
 
         frame = frame[0:1000, 758:1188]
         return frame
-
-
 class receiver:
     def __init__(self):
         rospy.init_node('image_shower', anonymous=True)
-        self.image_sub = rospy.Subscriber("image_raw", Image,
-                                          self.callback)  # Image is not the image, but image from sensor_msgs.msgs
+        self.image_sub = rospy.Subscriber("image_raw", Image, self.callback)  # Image is not the image, but image from sensor_msgs.msgs
         self.stabilizer = VideoStabilizer()
         self.bridge = CvBridge()
-        # self.image_pub = rospy.Publisher("analyzed_image", Image, queue_size=10)
+        self.image_pub = rospy.Publisher("analyzed_image", Int32, queue_size=10)
+
 
     def homo_compose_a(self, img_points):
         A = []
@@ -118,7 +117,6 @@ class receiver:
     def callback(self, data):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
-            # self.showImage(cv_image)
         except CvBridgeError as e:
             print(e)
 
@@ -130,6 +128,10 @@ class receiver:
 
         image = self.backgroundsubtractor(warp)
         self.showImage(image)
+        a = Int32
+        a.data = 42
+
+        self.image_pub.publish(a)
 
     # Stabilize image
     def analyze_image(self, image):
@@ -162,7 +164,7 @@ class receiver:
                 cX = int(M["m10"] / M["m00"])
                 cY = int(M["m01"] / M["m00"])
                 cv2.circle(image, (cX, cY), 7, (0, 0, 255), -1)
-                cv2.putText(image, str(cv2.contourArea(contours[i])), (cX - 20, cY - 20),
+                cv2.putText(image, "X: " + str(cX) + " Y: " + str(cY), (cX - 20, cY - 20),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
         return image
 
@@ -175,8 +177,8 @@ class receiver:
         contours, hierarchy = cv2.findContours(subtracted, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         marked_image = self.mark_cars(image, contours)
 
-        Binary_result = cv2.merge((subtracted, subtracted, subtracted))
-        fgmask = np.hstack((Binary_result, marked_image))
+        binary_result = cv2.merge((subtracted, subtracted, subtracted))
+        fgmask = np.hstack((binary_result, marked_image))
         return fgmask
 
     def showImage(self, image):
@@ -184,7 +186,6 @@ class receiver:
         cv2.resizeWindow("Image window", (1188 - 758, 600))
         cv2.imshow("Image window", image)
         cv2.waitKey(1)
-
 
 def main(args):
     ic = receiver()

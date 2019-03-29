@@ -51,6 +51,8 @@ add_message_files(
   FILES
   Num.msg
   Car_values.msg
+  Num_array.msg
+  Num_2Darray.msg
 )
 
 ## Generate services in the 'srv' folder

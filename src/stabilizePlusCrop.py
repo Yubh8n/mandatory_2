@@ -8,9 +8,9 @@ import numpy as np
 import rosbag as bag
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
-from std_msgs.msg import Int32
+from std_msgs.msg import Int8
 roslib.load_manifest('mandatory_2')
-from mandatory_2.msg import Num
+from mandatory_2.msg import Num, Num_array
 from mandatory_2.msg import Car_values
 import math
 import rospkg
@@ -36,6 +36,10 @@ bb_obj = [img1, img2, img3, img4]
 rospack = rospkg.RosPack()
 
 a = Car_values()
+#x_y = Num()
+x_y_array = Num_array()
+#x_y_2Darray = Num_2Darray()
+
 class VideoStabilizer():
     def __init__(self):
         self.has_seen_first_frame = False
@@ -80,18 +84,19 @@ class VideoStabilizer():
                                                      frame.shape[0]))
 
         return frame
+
 class receiver:
     def __init__(self):
         rospy.init_node('image_shower', anonymous=True)
         self.image_sub = rospy.Subscriber("image_raw", Image, self.callback)  # Image is not the image, but image from sensor_msgs.msgs
         self.stabilizer = VideoStabilizer()
         self.bridge = CvBridge()
-        self.image_pub = rospy.Publisher("analyzed_image", Car_values, queue_size=10)
-
+        self.image_pub = rospy.Publisher("analyzed_image", Num_array, queue_size=10)
         self.previmg = 0
         self.first_run = True
         self.path = rospack.get_path("mandatory_2")
         self.mask = cv2.imread(self.path + "/src/mask.png")
+        self.cars = []
 
     def homo_compose_a(self, img_points):
         A = []
@@ -156,7 +161,7 @@ class receiver:
     # Remove the background
     def remove_background(self, mask):
         fgmask = fgbg.apply(mask)
-        fgmask = cv2.morphologyEx(fgmask, cv2.MORPH_CLOSE, kernel)
+        fgmask = cv2.morphologyEx(fgmask, cv2.MORPH_OPEN, kernel)
         return fgmask
 
     # Mark all cars in the original image
@@ -169,10 +174,13 @@ class receiver:
                 cv2.circle(image, (cX, cY), 7, (0, 0, 255), -1)
                 cv2.putText(image, "X: " + str(cX) + " Y: " + str(cY), (cX - 20, cY - 20),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
-                a.x = cX
-                a.y = cY
+                x_y = Num()
+                x_y.x = cX
+                x_y.y = cY
+                x_y_array.array.append(x_y)
                 #a.area = cv2.contourArea(contours[i])
-                self.image_pub.publish(a)
+        #print(len(x_y_array.array))
+        self.image_pub.publish(x_y_array)
         return image
 
     # Remove the background and mark the original image

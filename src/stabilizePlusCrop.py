@@ -132,17 +132,17 @@ class receiver:
         H = self.homography_transform(bb_img, bb_obj)
         width, height, colors = np.shape(cv_image)
         warp = cv2.warpPerspective(cv_image, H, (height, width))
-        #image = self.backgroundsubtractor(warp, cv_image)
+        image = self.backgroundsubtractor(warp, cv_image)
         warp = self.createMask(warp)
-        if self.first_run:
+        '''if self.first_run:
             self.first_run = False
             self.previmg = warp
             self.hsv = np.zeros_like(warp)
             self.hsv[..., 1] = 255
         else:
             self.opticalFlow(warp, self.previmg)
-            self.previmg = warp
-        self.showImage("org_img", warp)
+            self.previmg = warp'''
+        self.showImage("org_img", image)
 
     # Stabilize image
     def analyze_image(self, image):
@@ -193,8 +193,8 @@ class receiver:
         contours, hierarchy = cv2.findContours(subtracted, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         marked_image = self.mark_cars(image, contours)
         binary_result = cv2.merge((subtracted, subtracted, subtracted))
-        #fgmask = np.hstack((binary_result, marked_image))
-        return binary_result
+        fgmask = np.hstack((binary_result, marked_image))
+        return fgmask
     def opticalFlow(self, current_image, prev_image):
         next = cv2.cvtColor(current_image, cv2.COLOR_BGR2GRAY)
         prvs = cv2.cvtColor(prev_image, cv2.COLOR_BGR2GRAY)

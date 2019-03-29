@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="758d9d99-3786-4ea4-9851-9bc0638fa479" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/kalman_thor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../launch/play.launch" beforeDir="false" afterPath="$PROJECT_DIR$/../launch/play.launch" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../package.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../package.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kalman.py" beforeDir="false" afterPath="$PROJECT_DIR$/kalman.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/stabilizePlusCrop.py" beforeDir="false" afterPath="$PROJECT_DIR$/stabilizePlusCrop.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -17,23 +14,28 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/stabilizePlusCrop.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1935">
-              <caret line="15" column="42" lean-forward="true" selection-start-line="15" selection-start-column="42" selection-end-line="15" selection-end-column="42" />
+            <state relative-caret-position="304">
+              <caret line="196" column="21" selection-start-line="196" selection-start-column="21" selection-end-line="196" selection-end-column="21" />
               <folding>
                 <element signature="e#22#59#0" expanded="true" />
+                <element signature="e#5001#5068#0" />
+                <element signature="e#5146#5573#0" />
+                <element signature="e#5657#5813#0" />
+                <element signature="e#5907#6539#0" />
+                <element signature="e#7252#7744#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/kalman.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="337">
-              <caret line="23" column="30" selection-start-line="23" selection-start-column="30" selection-end-line="23" selection-end-column="30" />
+            <state relative-caret-position="248">
+              <caret line="25" column="9" selection-start-line="25" selection-start-column="9" selection-end-line="25" selection-end-column="9" />
               <folding>
                 <element signature="e#22#59#0" expanded="true" />
               </folding>
@@ -64,10 +66,10 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="67" />
     <option name="y" value="25" />
-    <option name="width" value="1299" />
+    <option name="width" value="650" />
     <option name="height" value="743" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -170,10 +172,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="67" y="25" width="1299" height="743" extended-state="6" />
+    <frame x="67" y="25" width="1299" height="743" extended-state="7" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.28291535" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.12460815" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -236,18 +238,23 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/stabilizePlusCrop.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1935">
-          <caret line="15" column="42" lean-forward="true" selection-start-line="15" selection-start-column="42" selection-end-line="15" selection-end-column="42" />
+        <state relative-caret-position="304">
+          <caret line="196" column="21" selection-start-line="196" selection-start-column="21" selection-end-line="196" selection-end-column="21" />
           <folding>
             <element signature="e#22#59#0" expanded="true" />
+            <element signature="e#5001#5068#0" />
+            <element signature="e#5146#5573#0" />
+            <element signature="e#5657#5813#0" />
+            <element signature="e#5907#6539#0" />
+            <element signature="e#7252#7744#0" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/kalman.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="337">
-          <caret line="23" column="30" selection-start-line="23" selection-start-column="30" selection-end-line="23" selection-end-column="30" />
+        <state relative-caret-position="248">
+          <caret line="25" column="9" selection-start-line="25" selection-start-column="9" selection-end-line="25" selection-end-column="9" />
           <folding>
             <element signature="e#22#59#0" expanded="true" />
           </folding>

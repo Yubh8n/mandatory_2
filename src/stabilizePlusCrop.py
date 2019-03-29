@@ -13,6 +13,7 @@ roslib.load_manifest('mandatory_2')
 from mandatory_2.msg import Num
 from mandatory_2.msg import Car_values
 import math
+import rospkg
 
 
 fgbg = cv2.createBackgroundSubtractorKNN()
@@ -31,6 +32,8 @@ video = bag.Bag('test.bag', 'w')
 
 bb_img = [obj1, obj2, obj3, obj4]
 bb_obj = [img1, img2, img3, img4]
+
+rospack = rospkg.RosPack()
 
 a = Car_values()
 class VideoStabilizer():
@@ -76,7 +79,6 @@ class VideoStabilizer():
         frame = cv2.warpPerspective(frame, M, dsize=(frame.shape[1],
                                                      frame.shape[0]))
 
-        frame = frame[0:1000, 758:1188]
         return frame
 class receiver:
     def __init__(self):
@@ -88,7 +90,8 @@ class receiver:
 
         self.previmg = 0
         self.first_run = True
-
+        self.path = rospack.get_path("mandatory_2")
+        self.mask = cv2.imread(self.path + "/src/mask.png")
 
     def homo_compose_a(self, img_points):
         A = []
@@ -125,15 +128,13 @@ class receiver:
             cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
         except CvBridgeError as e:
             print(e)
-        #print(cv_image.shape)
-        #print(cv_image.dtype)
         cv_image = self.analyze_image(cv_image)
 
         H = self.homography_transform(bb_img, bb_obj)
         width, height, colors = np.shape(cv_image)
         warp = cv2.warpPerspective(cv_image, H, (height, width))
-        image = self.backgroundsubtractor(warp, cv_image)
-        warp = self.createMask(warp)
+        image = self.backgroundsubtractor(cv_image)
+        #warp = self.createMask(warp)
         '''if self.first_run:
             self.first_run = False
             self.previmg = warp
@@ -143,35 +144,25 @@ class receiver:
             self.opticalFlow(warp, self.previmg)
             self.previmg = warp'''
         self.showImage("org_img", image)
+        #self.showImage("mask", self.mask)
 
     # Stabilize image
     def analyze_image(self, image):
         image = self.stabilizer.stabilize_frame(image)
-        return image
-
-    # Create a mask of the image.
-    def createMask(self, image):
-
-        rows, cols, channels = image.shape
-        mask = np.zeros((rows, cols), dtype=image.dtype)
-        BWimage = cv2.merge((mask, mask, mask))
-        cv2.line(BWimage, (100, 1000), (310, 500), (255, 255, 255), 130)
-        cv2.line(BWimage, (310, 500), (310, 200), (255, 255, 255), 130)
-        cv2.line(BWimage, (310, 200), (350, 70), (255, 255, 255), 130)
-        BWimage = cv2.bitwise_and(BWimage,image)
-        return BWimage
+        frame = cv2.bitwise_and(image, self.mask)
+        frame = frame[0:1000, 758:1188]
+        return frame
 
     # Remove the background
-    def remove_background(self, image, mask):
-        res = cv2.bitwise_and(image, mask)
-        fgmask = fgbg.apply(res)
+    def remove_background(self, mask):
+        fgmask = fgbg.apply(mask)
         fgmask = cv2.morphologyEx(fgmask, cv2.MORPH_CLOSE, kernel)
         return fgmask
 
     # Mark all cars in the original image
     def mark_cars(self, image, contours):
         for i in range(0, np.alen(contours)):
-            if cv2.contourArea(contours[i]) > 200:
+            if cv2.contourArea(contours[i]) > 100:
                 m1 = cv2.moments(contours[i])
                 cX = int(m1["m10"] / m1["m00"])
                 cY = int(m1["m01"] / m1["m00"])
@@ -186,12 +177,10 @@ class receiver:
 
     # Remove the background and mark the original image
     # plot both the masked and background subtracted image together with the original image with marks
-    def backgroundsubtractor(self, image, original_image):
-
-        mask_3chan = self.createMask(image)
-        subtracted = self.remove_background(image, mask_3chan)
+    def backgroundsubtractor(self, original_image):
+        subtracted = self.remove_background(original_image)
         contours, hierarchy = cv2.findContours(subtracted, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        marked_image = self.mark_cars(image, contours)
+        marked_image = self.mark_cars(original_image, contours)
         binary_result = cv2.merge((subtracted, subtracted, subtracted))
         fgmask = np.hstack((binary_result, marked_image))
         return fgmask

@@ -37,7 +37,7 @@ rospack = rospkg.RosPack()
 
 a = Car_values()
 #x_y = Num()
-x_y_array = Num_array()
+#x_y_array = Num_array()
 #x_y_2Darray = Num_2Darray()
 
 class VideoStabilizer():
@@ -166,6 +166,7 @@ class receiver:
 
     # Mark all cars in the original image
     def mark_cars(self, image, contours):
+        x_y_array = Num_array()
         for i in range(0, np.alen(contours)):
             if cv2.contourArea(contours[i]) > 100:
                 m1 = cv2.moments(contours[i])
@@ -188,10 +189,11 @@ class receiver:
     def backgroundsubtractor(self, original_image):
         subtracted = self.remove_background(original_image)
         contours, hierarchy = cv2.findContours(subtracted, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        subtracted = cv2.merge((subtracted, subtracted, subtracted))
+        subtracted = cv2.bitwise_and(subtracted, original_image)
         marked_image = self.mark_cars(original_image, contours)
-        binary_result = cv2.merge((subtracted, subtracted, subtracted))
-        fgmask = np.hstack((binary_result, marked_image))
-        return fgmask
+        #fgmask = np.hstack((binary_result, marked_image))
+        return subtracted
     def opticalFlow(self, current_image, prev_image):
         next = cv2.cvtColor(current_image, cv2.COLOR_BGR2GRAY)
         prvs = cv2.cvtColor(prev_image, cv2.COLOR_BGR2GRAY)

@@ -11,7 +11,6 @@ from math import sqrt
 roslib.load_manifest('mandatory_2')
 
 result = Num_array()
-x_y = Num()
 Prevcar_array = Num_array
 
 '''
@@ -70,8 +69,10 @@ class data_collector:
     def __init__(self):
         rospy.init_node('kalman', anonymous=True)
         self.cords_sub = rospy.Subscriber("analyzed_image", Num_array, self.callback)
+        self.centroids_pub = rospy.Publisher("Kalman_predictions", Num_array, queue_size=10)
         self.tracked_cars = []
         self.first_run = True
+        self.tracked_car = []
 
     def callback(self, data):
         result.array = data.array
@@ -81,13 +82,33 @@ class data_collector:
             self.first_run = False
         else:
             self.find_new_points(Car_array)
-        print(self.tracked_cars)
-        print("--------------------")
+        self.publish_kalman_centroids(Car_array)
+        #print(Car_array)
+        #print("--------------------")
+
+    def kalman(self, point):
+        pass
+
+    def PlotX_y(self, array):
+        pass
+
+
+    def publish_kalman_centroids(self, array):
+        centroid_ros_array = Num_array()
+        for centroid in array:
+            x_y = Num()
+            x_y.x = centroid[0]
+            x_y.y = centroid[1]
+            centroid_ros_array.array.append(x_y)
+        self.centroids_pub.publish(centroid_ros_array)
 
     def find_new_points(self, array):
+        new_cars = []
         for point in array:
             if not self.is_point_being_tracked(point, 150):
-                self.tracked_cars.append(point)
+                new_cars.append(point)
+
+        return new_cars
 
     def is_point_being_tracked(self, point, min_distance):
         for trackedpoint in self.tracked_cars:
@@ -99,7 +120,6 @@ class data_collector:
 
     def match_points(self,array1, array2):
         pass
-
     def Euclidean_distance(self, point1, point2):
         #print(sqrt((point1[0]-point2[0])**2+(point1[1]-point2[1])**2))
         #print(point1)

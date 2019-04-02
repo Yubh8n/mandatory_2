@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="758d9d99-3786-4ea4-9851-9bc0638fa479" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/kalman_thor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kalman.py" beforeDir="false" afterPath="$PROJECT_DIR$/kalman.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kalman_thor.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kalman_thor.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/stabilizePlusCrop.py" beforeDir="false" afterPath="$PROJECT_DIR$/stabilizePlusCrop.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -17,15 +18,15 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/stabilizePlusCrop.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="304">
-              <caret line="196" column="21" selection-start-line="196" selection-start-column="21" selection-end-line="196" selection-end-column="21" />
+            <state relative-caret-position="864">
+              <caret line="220" column="9" selection-start-line="220" selection-start-column="9" selection-end-line="220" selection-end-column="9" />
               <folding>
                 <element signature="e#22#59#0" expanded="true" />
-                <element signature="e#5001#5068#0" />
-                <element signature="e#5146#5573#0" />
-                <element signature="e#5657#5813#0" />
-                <element signature="e#5907#6539#0" />
-                <element signature="e#7252#7744#0" />
+                <element signature="e#895#2560#0" />
+                <element signature="e#3197#3646#0" />
+                <element signature="e#3716#4299#0" />
+                <element signature="e#5196#5353#0" />
+                <element signature="e#5430#5543#0" />
               </folding>
             </state>
           </provider>
@@ -34,10 +35,11 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/kalman.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="248">
-              <caret line="25" column="9" selection-start-line="25" selection-start-column="9" selection-end-line="25" selection-end-column="9" />
+            <state relative-caret-position="240">
+              <caret line="84" column="48" lean-forward="true" selection-start-line="84" selection-start-column="48" selection-end-line="84" selection-end-column="48" />
               <folding>
-                <element signature="e#22#59#0" expanded="true" />
+                <element signature="e#291#2276#0" />
+                <element signature="e#3385#3389#0" />
               </folding>
             </state>
           </provider>
@@ -52,6 +54,12 @@
       </list>
     </option>
   </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>self.image_pub</find>
+      <find>self.prev</find>
+    </findStrings>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
@@ -61,12 +69,12 @@
         <option value="$PROJECT_DIR$/imageImport.py" />
         <option value="$PROJECT_DIR$/receiver.py" />
         <option value="$USER_HOME$/Git/RoVi2/PumpkinProject/venv/Test.py" />
-        <option value="$PROJECT_DIR$/stabilizePlusCrop.py" />
         <option value="$PROJECT_DIR$/kalman.py" />
+        <option value="$PROJECT_DIR$/stabilizePlusCrop.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="67" />
     <option name="y" value="25" />
     <option name="width" value="650" />
@@ -172,7 +180,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="67" y="25" width="1299" height="743" extended-state="7" />
+    <frame x="67" y="25" width="1299" height="743" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.12460815" />
@@ -236,27 +244,28 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/stabilizePlusCrop.py">
+    <entry file="file://$PROJECT_DIR$/kalman.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="304">
-          <caret line="196" column="21" selection-start-line="196" selection-start-column="21" selection-end-line="196" selection-end-column="21" />
+        <state relative-caret-position="240">
+          <caret line="84" column="48" lean-forward="true" selection-start-line="84" selection-start-column="48" selection-end-line="84" selection-end-column="48" />
           <folding>
-            <element signature="e#22#59#0" expanded="true" />
-            <element signature="e#5001#5068#0" />
-            <element signature="e#5146#5573#0" />
-            <element signature="e#5657#5813#0" />
-            <element signature="e#5907#6539#0" />
-            <element signature="e#7252#7744#0" />
+            <element signature="e#291#2276#0" />
+            <element signature="e#3385#3389#0" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/kalman.py">
+    <entry file="file://$PROJECT_DIR$/stabilizePlusCrop.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="248">
-          <caret line="25" column="9" selection-start-line="25" selection-start-column="9" selection-end-line="25" selection-end-column="9" />
+        <state relative-caret-position="864">
+          <caret line="220" column="9" selection-start-line="220" selection-start-column="9" selection-end-line="220" selection-end-column="9" />
           <folding>
             <element signature="e#22#59#0" expanded="true" />
+            <element signature="e#895#2560#0" />
+            <element signature="e#3197#3646#0" />
+            <element signature="e#3716#4299#0" />
+            <element signature="e#5196#5353#0" />
+            <element signature="e#5430#5543#0" />
           </folding>
         </state>
       </provider>

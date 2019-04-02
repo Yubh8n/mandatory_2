@@ -10,59 +10,6 @@ from math import sqrt
 
 roslib.load_manifest('mandatory_2')
 
-result = Num_array()
-Prevcar_array = Num_array
-
-'''
-    def transformObservation(self, new_obs):
-        temp = np.array(new_obs)
-        self.observations = np.vstack((self.observations, temp))
-        return self.H * new_obs
-    def run_one_step(self, new_obs):
-        self.calcNextP()
-        self.calcK()
-        self.calcNextX()
-        new_obs = self.transformObservation(new_obs)
-        self.calcPredictX(new_obs)
-        self.calcPredictP()
-
-        self.iterations = self.iterations + 1
-
-        return self.nextX
-    def calcNextX(self):
-        self.prevX = self.F * self.nextX + self.B * self.prevMu
-    def calcNextP(self):
-        self.prevP = self.F * self.nextP * self.F.T + self.Q
-    def calcK(self):
-        self.K = self.prevP * self.H.T * ((self.H * self.prevP * self.H.T + self.R) ** -1)
-    def calcPredictX(self, measurement):
-        self.nextX = self.prevX + self.K * (measurement - self.H * self.prevX)
-
-        temp = np.array(self.nextX)
-
-        # print(self.predictions)
-        # print(temp)
-
-        self.predictions = np.vstack((self.predictions, temp))
-
-        def calcPredictP(self):
-            self.nextP = (np.matlib.identity(4) - self.K * self.H) * self.prevP
-    def Init_kal(self):
-        # Init kalman filter parameters
-        self.deltaT = 1.
-        self.F = np.matrix([[1, 0, self.deltaT, 0], [0, 1, 0, self.deltaT], [0, 0, 1, 0], [0, 0, 0, 1]])
-        self.B = np.matrix([[self.deltaT ** 2 / 2, 0], [0, self.deltaT ** 2 / 2], [self.deltaT, 0], [0, self.deltaT]])
-        self.H = np.matrix([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
-        model_noise = 1
-        measurement_noise = 100
-        self.R = measurement_noise ** 2 * np.matlib.identity(4) / self.deltaT
-        self.Q = model_noise ** 2 * np.matlib.identity(4) * self.deltaT
-        self.init_mu = np.matrix([[0., 0], [0., 0]])  # This is the acceleration estimate
-        self.init_P = np.matlib.identity(4)
-        self.init_x = np.matrix([[0], [0], [0], [0]])
-    def Kalman(self):
-
-        pass''' #Thor kalman
 
 
 class data_collector:
@@ -75,6 +22,7 @@ class data_collector:
         self.tracked_car = []
 
     def callback(self, data):
+        result = Num_array()
         result.array = data.array
         Car_array = self.create_car_array(result.array)
         if self.first_run:

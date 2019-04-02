@@ -15,30 +15,10 @@ from mandatory_2.msg import Car_values
 import math
 import rospkg
 
-
 fgbg = cv2.createBackgroundSubtractorKNN()
 kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
 
-obj1 = [320, 200]
-obj2 = [320, 400]
-obj3 = [1000, 0]
-obj4 = [1000, 350]
-
-img1 = [0, 0]
-img2 = [0, 420]
-img3 = [1000, 0]
-img4 = [1000, 420]
-video = bag.Bag('test.bag', 'w')
-
-bb_img = [obj1, obj2, obj3, obj4]
-bb_obj = [img1, img2, img3, img4]
-
 rospack = rospkg.RosPack()
-
-a = Car_values()
-#x_y = Num()
-#x_y_array = Num_array()
-#x_y_2Darray = Num_2Darray()
 
 class VideoStabilizer():
     def __init__(self):
@@ -102,46 +82,21 @@ class receiver:
         self.image = []
 
     def kalman_callback(self, data):
+        #Convert ros data to python data.
         kalman_predictions = Num_array()
         kalman_predictions.array = data.array
         for centroids in kalman_predictions.array:
             if len(kalman_predictions.array) > 0:
                 self.prediction.append((centroids.x, centroids.y))
-                cv2.circle(self.image, (centroids.x, centroids.y), 7, (0, 0, 255), -1)
-            pass
+                #Draw circles at the kalman predictions
+                #cv2.circle(self.image, (centroids.x, centroids.y), 4, (0, 0, 255), -1)
+
+        #Print the predictions and show the image with the drawn circles
         print (self.prediction)
         print("--------------")
-        self.showImage("Kalman image", self.image)
+        #self.showImage("Kalman image", self.image)
         self.prediction = []
 
-    def homo_compose_a(self, img_points):
-        A = []
-        for i in range(np.alen(img_points)):
-            A.append(list(img_points[i]))
-            A.append(list(reversed(img_points[i])))
-
-        # Add zeros and ones. (Translation
-        for i in range(0, np.alen(A)):
-            if i % 2 == 0:
-                A[i].append(1)
-                A[i].append(0)
-            else:
-                A[i][1] = -A[i][1]
-                A[i].append(0)
-                A[i].append(1)
-        return A
-    def homography_transform(self, img_points, obj_points):
-        H = []
-        for i in range(0, 4):
-            H.append([-img_points[i][1], -img_points[i][0], -1, 0, 0, 0, img_points[i][1] * obj_points[i][1],
-                      img_points[i][0] * obj_points[i][1], obj_points[i][1]])
-            H.append([0, 0, 0, -img_points[i][1], -img_points[i][0], -1, img_points[i][1] * obj_points[i][0],
-                      img_points[i][0] * obj_points[i][0], obj_points[i][0]])
-        H.append([0, 0, 0, 0, 0, 0, 0, 0, 1])
-        b = [0, 0, 0, 0, 0, 0, 0, 0, 1]
-        x = np.linalg.solve(H, b)
-        x = np.reshape(x, (3, 3))
-        return x
     def callback(self, data):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
@@ -149,33 +104,32 @@ class receiver:
             print(e)
         cv_image = self.analyze_image(cv_image)
 
-        H = self.homography_transform(bb_img, bb_obj)
-        width, height, colors = np.shape(cv_image)
-        warp = cv2.warpPerspective(cv_image, H, (height, width))
-        image = self.backgroundsubtractor(cv_image)
-        #warp = self.createMask(warp)
-        '''if self.first_run:
-            self.first_run = False
-            self.previmg = warp
-            self.hsv = np.zeros_like(warp)
-            self.hsv[..., 1] = 255
-        else:
-            self.opticalFlow(warp, self.previmg)
-            self.previmg = warp'''
-        #self.showImage("org_img", image)
-        #self.showImage("mask", self.mask)
-    # Stabilize image
+        cropped_image = self.crop_image(cv_image, 0, 1000, 758, 1188)
+
+        subtracted = self.remove_background(cropped_image)
+        contours, hierarchy = cv2.findContours(subtracted, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        subtracted = cv2.merge((subtracted, subtracted, subtracted))
+        subtracted = cv2.bitwise_and(subtracted, cropped_image)
+
+        marked_image = self.mark_cars(cropped_image, contours)
+        fgmask = np.hstack((subtracted, marked_image))
+
+        self.showImage("Marked and Sectioned", fgmask)
+
     def analyze_image(self, image):
-        image = self.stabilizer.stabilize_frame(image)
-        frame = cv2.bitwise_and(image, self.mask)
-        frame = frame[0:1000, 758:1188]
+        frame = self.stabilizer.stabilize_frame(image)
+        frame = cv2.bitwise_and(frame, self.mask)
         return frame
-    # Remove the background
+
+    def crop_image(self, image, xmin, xmax, ymin, ymax):
+        frame = image[xmin:xmax, ymin:ymax]
+        return frame
+
     def remove_background(self, mask):
         fgmask = fgbg.apply(mask)
         fgmask = cv2.morphologyEx(fgmask, cv2.MORPH_OPEN, kernel)
         return fgmask
-    # Mark all cars in the original image
+
     def mark_cars(self, image, contours):
         x_y_array = Num_array()
         self.image = image
@@ -184,9 +138,9 @@ class receiver:
                 m1 = cv2.moments(contours[i])
                 cX = int(m1["m10"] / m1["m00"])
                 cY = int(m1["m01"] / m1["m00"])
-                #cv2.circle(image, (cX, cY), 7, (0, 0, 255), -1)
-                #cv2.putText(image, "X: " + str(cX) + " Y: " + str(cY), (cX - 20, cY - 20),
-                            #cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+                cv2.circle(image, (cX, cY), 7, (0, 0, 255), -1)
+                cv2.putText(image, "X: " + str(cX) + " Y: " + str(cY), (cX - 20, cY - 20),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
                 x_y = Num()
                 x_y.x = cX
                 x_y.y = cY
@@ -195,16 +149,7 @@ class receiver:
         #print(len(x_y_array.array))
         self.image_pub.publish(x_y_array)
         return image
-    # Remove the background and mark the original image
-    # plot both the masked and background subtracted image together with the original image with marks
-    def backgroundsubtractor(self, original_image):
-        subtracted = self.remove_background(original_image)
-        contours, hierarchy = cv2.findContours(subtracted, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        subtracted = cv2.merge((subtracted, subtracted, subtracted))
-        subtracted = cv2.bitwise_and(subtracted, original_image)
-        marked_image = self.mark_cars(original_image, contours)
-        #fgmask = np.hstack((binary_result, marked_image))
-        return subtracted
+
     def opticalFlow(self, current_image, prev_image):
         next = cv2.cvtColor(current_image, cv2.COLOR_BGR2GRAY)
         prvs = cv2.cvtColor(prev_image, cv2.COLOR_BGR2GRAY)
@@ -216,11 +161,21 @@ class receiver:
         bgr = cv2.cvtColor(self.hsv, cv2.COLOR_HSV2BGR)
 
         self.showImage("optical_flow",bgr)
+
+        '''if self.first_run:
+            self.first_run = False
+            self.previmg = warp
+            self.hsv = np.zeros_like(warp)
+            self.hsv[..., 1] = 255
+        else:
+            self.opticalFlow(warp, self.previmg)
+            self.previmg = warp'''
+
     def showImage(self, window_name, image):
         cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
-        #cv2.resizeWindow(window_name, (1188 - 758, 600))
         cv2.imshow(window_name, image)
         cv2.waitKey(1)
+
 
 def main(args):
     ic = receiver()

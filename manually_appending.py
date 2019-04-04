@@ -1,18 +1,18 @@
 import numpy as np
 import cv2
 import sys
+import math
 
 cap = cv2.VideoCapture('/home/chris/ros_workspace/src/video_stabilizer_node/data/youtube_test.mp4')
 fgbg = cv2.createBackgroundSubtractorKNN()
 kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
 
-array = []
-
+#array = []
 def on_mouse(event, x, y, flag, param):
     if event == cv2.EVENT_LBUTTONDOWN:
         print(x, y)
         pass
-        array.append(str((x, y)) + "\n")
+        #array.append(str(x) + " " + str(y) + " ")
 
 def export_file(filename, array):
     f = open(filename, 'w')
@@ -21,22 +21,19 @@ def export_file(filename, array):
     f.close()
 
 def import_file(filename):
-    with open(filename, 'r') as f:
+    a = []
+    inp = open(filename,"r")
+    for line in inp.readlines():
+        for i in line.split():
+            a.append(int(i))
 
-        line = f.read()
-        q = line.split(' ')
-        a = map(int, q)
-
-    array = []
-    #print (a)
+    temp_array = []
     for i in range(0,len(a)):
         if i % 2 == 0:
-            array.append(a[i])
+            temp_array.append(a[i])
         else:
-            array.append(a[i])
-
-    #print(array)
-    return array
+            temp_array.append(a[i])
+    return temp_array
 
 class VideoStabilizer():
     def __init__(self):
@@ -84,7 +81,7 @@ class VideoStabilizer():
         return frame
 
 
-array = import_file("/home/chris/epic.txt")
+#array = import_file("/home/chris/epic.txt")
 
 
 class receiver:
@@ -92,10 +89,27 @@ class receiver:
 
         self.stabilizer = VideoStabilizer()
         self.first_run = True
-        self.mask = cv2.imread(self.path + "/src/mask.png")
         self.cars = []
         self.prediction = []
         self.image = []
+        self.mask = cv2.imread("/home/chris/ros_workspace/src/mandatory_2/src/mask.png")
+        self.left_lane = []
+        self.carList = []
+
+
+    def Euclidean_distance(self, point1, point2):
+        return math.sqrt((point1[0]-point2[0])**2+(point1[1]-point2[1])**2)
+
+    def set_image(self, image):
+        self.image = image
+
+    def set_marker(self, image):
+        self.left_lane = image #[430:460, 1060:1090]
+        cv2.rectangle(self.left_lane, (0, 475), (1157, 1080), (0, 0, 0), -1)
+        cv2.rectangle(self.left_lane, (1027, 436), (1900, 0), (0, 0, 0), -1)
+        cv2.rectangle(self.left_lane, (1090, 430), (1125, 491), (0, 0, 0), -1)
+    def get_image(self):
+        return self.image
 
     def analyze_image(self, image):
         frame = self.stabilizer.stabilize_frame(image)
@@ -113,11 +127,11 @@ class receiver:
 
     def mark_cars(self, image, contours):
         for i in range(0, np.alen(contours)):
-            if cv2.contourArea(contours[i]) > 100:
+            if cv2.contourArea(contours[i]) > 50:
                 m1 = cv2.moments(contours[i])
                 cX = int(m1["m10"] / m1["m00"])
                 cY = int(m1["m01"] / m1["m00"])
-                cv2.circle(image, (cX, cY), 7, (0, 0, 255), -1)
+                cv2.circle(image, (cX, cY), 4, (0, 0, 255), -1)
                 cv2.putText(image, "X: " + str(cX) + " Y: " + str(cY), (cX - 20, cY - 20),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
         return image
@@ -127,33 +141,50 @@ class receiver:
         cv2.imshow(window_name, image)
         cv2.waitKey(1)
 
+    def checkForNewCars(self, x_y):
+        for trackedCar in self.carList:
+            distance = self.Euclidean_distance(trackedCar, x_y)
+            if distance > 50:
+                trackedCar.append(x_y)
+
 
 def main(args):
     counter = 0
+    delay = 0
     ic = receiver()
+    array = import_file("/home/chris/epic.txt")
     while (True):
         # Capture frame-by-frame
         ret, frame = cap.read()
+        ic.set_image(frame)
+        img_stabilized = ic.analyze_image(frame)
+        ic.set_marker(img_stabilized)
+
+        #img_NoBackground = ic.remove_background(img_stabilized)
+        img_NoBackground = ic.remove_background(ic.left_lane)
+
+
         # Our operations on the frame come here
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         # Display the resulting frame
         cv2.namedWindow("frame", cv2.WINDOW_NORMAL)
         # cv2.resizeWindow("frame", 1080,680)
-        # cv2.setMouseCallback("frame", on_mouse)
-        cv2.circle(gray, (array[counter], array[counter + 1]), 2, (255), -1)
-        cv2.imshow('frame', gray)
-        # print (array[counter][0])
-        # print("New_image")
-        if cv2.waitKey(100) & 0xFF == ord('q'):
-            break
+        cv2.setMouseCallback("frame", on_mouse, array)
+        if delay > 4:
+            contours, hierarchy = cv2.findContours(img_NoBackground, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            frame = ic.mark_cars(img_stabilized, contours)
+
+        #cv2.circle(img_stabilized, (array[counter], array[counter + 1]), 2, (255), -1)
         counter += 2
+        delay += 1
+        cv2.imshow('frame', img_NoBackground)
+        if cv2.waitKey(0) & 0xFF == ord('q'):
+            break
+
     cv2.destroyAllWindows()
+    cap.release()
+    #export_file("/home/chris/epic.txt", array)
 
 
 if __name__ == '__main__':
     print("Launching!")
     main(sys.argv)
-
-
-cap.release()
-cv2.destroyAllWindows()

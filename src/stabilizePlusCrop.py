@@ -5,14 +5,10 @@ import sys
 import rospy
 import cv2
 import numpy as np
-import rosbag as bag
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
-from std_msgs.msg import Int8
 roslib.load_manifest('mandatory_2')
 from mandatory_2.msg import Num, Num_array
-from mandatory_2.msg import Car_values
-import math
 import rospkg
 
 fgbg = cv2.createBackgroundSubtractorKNN()
@@ -64,7 +60,6 @@ class VideoStabilizer():
                                                      frame.shape[0]))
 
         return frame
-
 class receiver:
     def __init__(self):
         rospy.init_node('image_shower', anonymous=True)
@@ -175,7 +170,6 @@ class receiver:
         cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
         cv2.imshow(window_name, image)
         cv2.waitKey(1)
-
 
 def main(args):
     ic = receiver()

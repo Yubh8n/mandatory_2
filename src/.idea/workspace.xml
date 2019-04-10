@@ -5,10 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="758d9d99-3786-4ea4-9851-9bc0638fa479" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../manually_appending.py" beforeDir="false" afterPath="$PROJECT_DIR$/../manually_appending.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lecture10.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lecture10.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kalman.py" beforeDir="false" afterPath="$PROJECT_DIR$/kalman.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/stabilizePlusCrop.py" beforeDir="false" afterPath="$PROJECT_DIR$/stabilizePlusCrop.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -65,8 +61,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/stabilizePlusCrop.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="199">
-              <caret line="84" column="39" selection-start-line="84" selection-start-column="39" selection-end-line="84" selection-end-column="39" />
+            <state relative-caret-position="260">
+              <caret line="26" column="8" selection-start-line="26" selection-start-column="8" selection-end-line="26" selection-end-column="8" />
               <folding>
                 <element signature="e#22#59#0" expanded="true" />
                 <element signature="e#1377#2592#0" />
@@ -86,6 +82,7 @@
                 <element signature="e#9670#9926#0" />
                 <element signature="e#10001#10262#0" />
                 <element signature="e#10310#10468#0" />
+                <element signature="e#11441#16983#0" />
                 <element signature="e#11243#11310#0" />
                 <element signature="e#11361#11457#0" />
                 <element signature="e#13615#13862#0" />
@@ -187,8 +184,8 @@
         <option value="$PROJECT_DIR$/../../mavlink_lora/scripts/qgc_generate_plan_example.py" />
         <option value="$PROJECT_DIR$/Lecture10.py" />
         <option value="$PROJECT_DIR$/kalman.py" />
-        <option value="$PROJECT_DIR$/stabilizePlusCrop.py" />
         <option value="$PROJECT_DIR$/../manually_appending.py" />
+        <option value="$PROJECT_DIR$/stabilizePlusCrop.py" />
       </list>
     </option>
   </component>
@@ -594,8 +591,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/stabilizePlusCrop.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="199">
-          <caret line="84" column="39" selection-start-line="84" selection-start-column="39" selection-end-line="84" selection-end-column="39" />
+        <state relative-caret-position="260">
+          <caret line="26" column="8" selection-start-line="26" selection-start-column="8" selection-end-line="26" selection-end-column="8" />
           <folding>
             <element signature="e#22#59#0" expanded="true" />
             <element signature="e#1377#2592#0" />
@@ -615,6 +612,7 @@
             <element signature="e#9670#9926#0" />
             <element signature="e#10001#10262#0" />
             <element signature="e#10310#10468#0" />
+            <element signature="e#11441#16983#0" />
             <element signature="e#11243#11310#0" />
             <element signature="e#11361#11457#0" />
             <element signature="e#13615#13862#0" />

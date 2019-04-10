@@ -23,6 +23,8 @@ kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
 
 class communication():
     def __init__(self):
+
+        
         rospy.init_node('image_shower', anonymous=True)
         self.image_sub = rospy.Subscriber("image_raw", Image,
                                           self.img_callback)  # Image is not the image, but image from sensor_msgs.msgs

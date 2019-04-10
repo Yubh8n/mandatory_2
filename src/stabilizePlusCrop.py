@@ -38,6 +38,7 @@ class communication():
         self.vf = various_functions()
         self.image_manipulator = receiver()
         self.lucas = LK()
+        self.tracker = own_tracker()
         org_points = cv2.UMat(np.array([[1126, 861], [1264, 451], [866, 342], [321, 852]], dtype=np.uint16))
         new_points = cv2.UMat(np.array([[1126, 861], [1238, 528], [866, 342], [728, 856]], dtype=np.uint16))
 
@@ -46,11 +47,13 @@ class communication():
         topLeft_initbox = self.image_manipulator.create_init_boxes(mask, (100, 200), (280, 120), (50, 1080), (144, 700))
         self.lucas.initialize_LK_image(topLeft_initbox)
         self.first_run = False
+
     def kalman_callback(self, data):
         #print("data collected")
         result = Num_array()
         result.array = data.array
         car_array = self.create_car_array(result.array)
+
     def img_callback(self, data):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
@@ -60,24 +63,24 @@ class communication():
         if self.first_run:
             self.initialize_values(cv_image)
 
-
         ###############Loopity Loop###############
 # read in the image, and stabilize plus crop
-        mask = self.image_manipulator.stabilize_image(cv_image, 1, 1, (320, 1080), (800, 1200))
-        #org_image = self.image_manipulator.stabilize_image(cv_image, 0, 0, (320, 1080), (800, 1200))
-        lucas_image = self.lucas.LKStep(mask)
+        mask = self.image_manipulator.stabilize_image(cv_image, 1, 1, (320, 1000), (800, 1200))
+        org_image = self.image_manipulator.stabilize_image(cv_image, 0, 0, (320, 1080), (800, 1200))
+        #lucas_image = self.lucas.LKStep(mask)
         no_background = self.image_manipulator.remove_background(mask)
 # Create a Top left detector box both color and BW
-        topLeft_BW = self.image_manipulator.create_init_boxes(no_background,
-                                                              (100, 200), (280, 120), (50, 1080), (144, 700))
+        topLeft_BW = self.image_manipulator.create_init_boxes(no_background, (100, 200), (280, 120), (50, 1080), (144, 700))
 
 # Find the contours of the cars
-        hulls = self.lucas.filter_Contours(topLeft_BW, 100, 500)
-        cv2.drawContours(lucas_image, hulls, -1, (255, 0, 0), 1)
+        hulls = self.lucas.filter_Contours(topLeft_BW, 30, 2000)
+        #cv2.drawContours(lucas_image, hulls, -1, (255, 0, 0), 1)
         centers_of_hulls = self.lucas.get_centroids(hulls)
-        self.lucas.draw_circles(lucas_image,centers_of_hulls)
+        self.tracker.append_cars(centers_of_hulls)
+        tracked = self.tracker.wannabe_LKstep(no_background, mask)
+        #self.lucas.draw_circles(lucas_image,centers_of_hulls)
 # Track the cars
-        self.lucas.trackCars(centers_of_hulls)
+        #self.lucas.trackCars(centers_of_hulls)
         #print(len(self.lucas.tracked_cars))
 
         # if len(self.lucas.tracked_cars) > 1:
@@ -89,7 +92,7 @@ class communication():
         #          x_y_array.array.append(x_y)
         #      self.image_pub.publish(x_y_array)
 
-        self.vf.showImages("Marked image", lucas_image)
+        self.vf.showImages("Marked image", tracked)
     def create_car_array(self, array):
         arrayOfXy = []
         for i in range (1,len(array)):
@@ -287,7 +290,6 @@ class LK:
         self.ID = 0
 
         self.kalman_list = []
-
     def draw_circles(self, image, array_of_x_y_coords):
         for xy in array_of_x_y_coords:
             # print(xy)
@@ -321,14 +323,17 @@ class LK:
         self.old_gray = new_gray
         self.p0 = good_new.reshape(-1, 1, 2)
         for i in range(0, len(self.tracked_cars)):
-            pass
             image = cv2.circle(image, (int(self.tracked_cars[i][0]), int(self.tracked_cars[i][1])), 5, self.color[i].tolist(), -1)
             image = cv2.putText(image, "car number: " + str(i), (int(self.tracked_cars[i][0]), int(self.tracked_cars[i][1])), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 
         return image
-    def wannabe_LKstep(self, masked_image):
-
-        pass
+    def wannabe_LKstep(self, masked_image, org_image):
+        returnimage = org_image.copy()
+        hulls = self.filter_Contours(masked_image, 50, 2000)
+        cv2.drawContours(returnimage, hulls, -1, (0,255,0), 1)
+        centers_of_hulls = self.get_centroids(hulls)
+        self.draw_circles(returnimage, centers_of_hulls)
+        return returnimage
     def append_cars(self):
         temp_array = []
         for car in self.p0:
@@ -340,6 +345,20 @@ class LK:
                 #print(temp_array[i][0], temp_array[i][1] , "number of tracked cars: " , len(self.tracked_cars))
                 self.kalman_list.append(ct)
                 self.ID += 1
+
+    def append_cars(self, array):
+        temp_array = []
+        for car in array:
+            temp_array.append((car[0], car[1]))
+        for i in range (0, len(temp_array)):
+            if not self.matches(temp_array[i], self.tracked_cars):
+                self.tracked_cars.append(temp_array[i])
+                ct = CarTracker(25, self.ID, temp_array[i][0], temp_array[i][1])
+                #print(temp_array[i][0], temp_array[i][1] , "number of tracked cars: " , len(self.tracked_cars))
+                self.kalman_list.append(ct)
+                self.ID += 1
+
+        print(self.tracked_cars)
     def matches(self, point, array_to_find_a_match):
         for i in range (0, len(array_to_find_a_match)):
             dist = self.Euclidean_distance(point, array_to_find_a_match[i])
@@ -402,6 +421,100 @@ class LK:
 
         if (len(cars_to_track) != 0):
             self.check_for_p0_dup(cars_to_track)
+class own_tracker:
+    def __init__(self):
+        self.tracked_cars = []
+    def Euclidean_distance(self, point1, point2):
+        return math.sqrt((point1[0]-point2[0])**2+(point1[1]-point2[1])**2)
+    def wannabe_LKstep(self, masked_image, org_image):
+        returnimage = org_image.copy()
+        hulls1 = self.filter_Contours(masked_image, 50, 2000)
+        cv2.drawContours(returnimage, hulls1, -1, (0,255,0), 1)
+        centers_of_hulls1 = self.get_centroids(hulls1)
+        self.update(centers_of_hulls1)
+        self.draw_circles(returnimage, self.tracked_cars)
+        return returnimage
+
+
+    def draw_circles(self, image, array_of_x_y_coords):
+        for i in range (0, len(array_of_x_y_coords)):
+            cv2.circle(image, (array_of_x_y_coords[i][0], array_of_x_y_coords[i][1]), 3, (0, 0, 255), -1)
+            image = cv2.putText(image, "car number: " + str(i), (int(array_of_x_y_coords[i][0]), int(array_of_x_y_coords[i][1])), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+
+
+    def update(self, array_of_centroids):
+        for car in array_of_centroids:
+            self.is_point_being_tracked(car)
+
+    def append_cars(self, array):
+        temp_array = []
+        for car in array:
+            temp_array.append((car[0], car[1]))
+        for i in range (0, len(temp_array)):
+            if not self.matches(temp_array[i], self.tracked_cars):
+                self.tracked_cars.append(temp_array[i])
+
+        print(self.tracked_cars)
+    def matches(self, point, array_to_find_a_match):
+        for i in range (0, len(array_to_find_a_match)):
+            dist = self.Euclidean_distance(point, array_to_find_a_match[i])
+            if dist < 20:
+                return True
+        return False
+
+    def check_for_dup(self, new_cars):
+        if len(self.tracked_cars) > 0:
+            for i in range(0, len(new_cars)):
+                if not (self.is_point_being_tracked(new_cars[i])):
+                    self.add_point(new_cars[i])
+        else:
+            self.add_point(new_cars)
+
+    def is_point_being_tracked(self, point):
+        tresh = 10
+        for i in range (0, len(self.tracked_cars)):
+            dist_array = []
+            any_below_tresh = False
+            lowest_dist = 0
+            for j in range (0, len(self.tracked_cars)):
+                distance = self.Euclidean_distance((self.tracked_cars[i][0], self.tracked_cars[i][1]), point)
+                if distance < tresh:
+                    any_below_tresh = True
+                dist_array.append(distance)
+            if any_below_tresh:
+                for k in range (1, len(dist_array)):
+                    if dist_array[k] < dist_array[k-1]:
+                        lowest_dist = k
+                self.tracked_cars[i] = dist_array[k]
+
+
+
+
+
+            if distance < tresh:
+                self.tracked_cars[i] = point
+
+    def filter_Contours(self, image, areaMin, areaMax):
+        contours, hierarchy = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+        filtered_contours = []
+        hulls = []
+        for i in range(0, np.alen(contours)):
+            if (cv2.contourArea(contours[i]) > areaMin and cv2.contourArea(contours[i]) < areaMax):
+                filtered_contours.append(contours[i])
+
+        for i in range(0, len(filtered_contours)):
+            hull = cv2.convexHull(filtered_contours[i])
+            hulls.append(hull)
+        return hulls
+
+    def get_centroids(self, contours):
+        fixed_hulls = []
+        for i in range(0, np.alen(contours)):
+            m1 = cv2.moments(contours[i])
+            cX = int(m1["m10"] / m1["m00"])
+            cY = int(m1["m01"] / m1["m00"])
+            fixed_hulls.append((cX, cY))
+        return fixed_hulls
 def main(args):
     ic = communication()
     try:

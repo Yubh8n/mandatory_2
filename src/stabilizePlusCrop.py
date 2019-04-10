@@ -17,7 +17,7 @@ from mandatory_2.msg import Num, Num_array
 
 rospack = rospkg.RosPack()
 
-cap = cv2.VideoCapture('/home/chris/ros_workspace/src/video_stabilizer_node/data/youtube_test.mp4')
+#cap = cv2.VideoCapture('/home/chris/ros_workspace/src/video_stabilizer_node/data/youtube_test.mp4')
 fgbg = cv2.createBackgroundSubtractorKNN()
 kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
 
@@ -64,8 +64,8 @@ class communication():
         ###############Loopity Loop###############
 # read in the image, and stabilize plus crop
         mask = self.image_manipulator.stabilize_image(cv_image, 1, 1, (320, 1080), (800, 1200))
-        org_image = self.image_manipulator.stabilize_image(cv_image, 0, 0, (320, 1080), (800, 1200))
-        lucas_image = self.lucas.LKStep(mask, org_image)
+        #org_image = self.image_manipulator.stabilize_image(cv_image, 0, 0, (320, 1080), (800, 1200))
+        lucas_image = self.lucas.LKStep(mask)
         no_background = self.image_manipulator.remove_background(mask)
 # Create a Top left detector box both color and BW
         topLeft_BW = self.image_manipulator.create_init_boxes(no_background,
@@ -75,20 +75,21 @@ class communication():
         hulls = self.lucas.filter_Contours(topLeft_BW, 100, 500)
         cv2.drawContours(lucas_image, hulls, -1, (255, 0, 0), 1)
         centers_of_hulls = self.lucas.get_centroids(hulls)
+        self.lucas.draw_circles(lucas_image,centers_of_hulls)
 # Track the cars
         self.lucas.trackCars(centers_of_hulls)
         #print(len(self.lucas.tracked_cars))
 
-        if len(self.lucas.tracked_cars) > 1:
-             for car in self.lucas.tracked_cars:
-                 x_y = Num()
-                 x_y.x = car[0]
-                 x_y.y = car[1]
-                 x_y_array = Num_array()
-                 x_y_array.array.append(x_y)
-             self.image_pub.publish(x_y_array)
+        # if len(self.lucas.tracked_cars) > 1:
+        #      for car in self.lucas.tracked_cars:
+        #          x_y = Num()
+        #          x_y.x = car[0]
+        #          x_y.y = car[1]
+        #          x_y_array = Num_array()
+        #          x_y_array.array.append(x_y)
+        #      self.image_pub.publish(x_y_array)
 
-        self.vf.showImages("Marked image", org_image)
+        self.vf.showImages("Marked image", lucas_image)
     def create_car_array(self, array):
         arrayOfXy = []
         for i in range (1,len(array)):
@@ -286,28 +287,21 @@ class LK:
         self.ID = 0
 
         self.kalman_list = []
+
+    def draw_circles(self, image, array_of_x_y_coords):
+        for xy in array_of_x_y_coords:
+            # print(xy)
+            cv2.circle(image, (xy[0], xy[1]), 3, (0, 0, 255), -1)
     def Euclidean_distance(self, point1, point2):
         return math.sqrt((point1[0]-point2[0])**2+(point1[1]-point2[1])**2)
     def initialize_LK_image(self, image):
         self.mask = np.zeros_like(image)
         self.old_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    def LKStep(self, newFrame, manipulation_image):
+    def LKStep(self, newFrame):
         self.append_cars()
-        for i in range (0, len(self.kalman_list)):
-            self.kalman_list[i].predict_pose()
-            self.kalman_list[i].update_pose(self.tracked_cars[i][0].copy(), self.tracked_cars[i][1].copy())
-
-            x, y = self.kalman_list[i].get_position()
-            speed = self.kalman_list[i].get_total_speed()
-            cv2.putText(manipulation_image, "car number: " + str(self.kalman_list[i].ID) + " Speed is: " + str(speed),
-                        (int(x + 800), int(y + 320)),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
-        for i in range(0, len(self.tracked_cars)):
-            image = cv2.circle(manipulation_image, (int(self.tracked_cars[i][0] + 800), int(self.tracked_cars[i][1] + 320)), 5, self.color[i].tolist(), -1)
-
+        image = newFrame.copy()
 
         # calculate optical flow
-        image = newFrame.copy()
         new_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         p1, st, err = cv2.calcOpticalFlowPyrLK(self.old_gray, new_gray, self.p0, None, **self.lk_params)
         # Select good points
@@ -321,11 +315,15 @@ class LK:
         for i, (new, old) in enumerate(zip(good_new, good_old)):
             a, b = new.ravel()
             c, d = old.ravel()
-            image = cv2.line(image, (a, b), (c, d), self.color[i].tolist(), 2)
+            #image = cv2.line(image, (a, b), (c, d), self.color[i].tolist(), 2)
 
 
         self.old_gray = new_gray
         self.p0 = good_new.reshape(-1, 1, 2)
+        for i in range(0, len(self.tracked_cars)):
+            pass
+            image = cv2.circle(image, (int(self.tracked_cars[i][0]), int(self.tracked_cars[i][1])), 5, self.color[i].tolist(), -1)
+            image = cv2.putText(image, "car number: " + str(i), (int(self.tracked_cars[i][0]), int(self.tracked_cars[i][1])), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 
         return image
     def wannabe_LKstep(self, masked_image):

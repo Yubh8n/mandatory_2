@@ -23,8 +23,6 @@ kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
 
 class communication():
     def __init__(self):
-
-        
         rospy.init_node('image_shower', anonymous=True)
         self.image_sub = rospy.Subscriber("image_raw", Image,
                                           self.img_callback)  # Image is not the image, but image from sensor_msgs.msgs
@@ -43,15 +41,7 @@ class communication():
         org_points = cv2.UMat(np.array([[1126, 861], [1264, 451], [866, 342], [321, 852]], dtype=np.uint16))
         new_points = cv2.UMat(np.array([[1126, 861], [1238, 528], [866, 342], [728, 856]], dtype=np.uint16))
 
-        # Find standard deviation of annotated car
-        automatically_annotated_car = self.vf.import_file("/home/chris/ros_workspace/src/mandatory_2/Without_brackets.txt")
-        manual_annotated_car = self.vf.import_file("/home/chris/ros_workspace/src/mandatory_2/Man.txt")
-        xy = self.vf.correct_to_x_y(automatically_annotated_car)
-        xy_man = self.vf.correct_to_x_y(manual_annotated_car)
-        standard_deviation = self.vf.calc_std_dev(xy, xy_man)
-        #print("Standard deviation is: " + str(standard_deviation))
-
-        # import frame and create a box for oncomming cars
+        # import frame and create a box for on-comming cars
         mask = self.image_manipulator.stabilize_image(frame, 1, 1, (320, 1080), (800, 1200))
         topLeft_initbox = self.image_manipulator.create_init_boxes(mask, (100, 200), (280, 120), (50, 1080), (144, 700))
         self.lucas.initialize_LK_image(topLeft_initbox)
@@ -69,15 +59,17 @@ class communication():
 
         if self.first_run:
             self.initialize_values(cv_image)
+
+
         ###############Loopity Loop###############
 # read in the image, and stabilize plus crop
         mask = self.image_manipulator.stabilize_image(cv_image, 1, 1, (320, 1080), (800, 1200))
         org_image = self.image_manipulator.stabilize_image(cv_image, 0, 0, (320, 1080), (800, 1200))
         lucas_image = self.lucas.LKStep(mask, org_image)
         no_background = self.image_manipulator.remove_background(mask)
-
 # Create a Top left detector box both color and BW
-        topLeft_BW = self.image_manipulator.create_init_boxes(no_background, (100, 200), (280, 120), (50, 1080), (144, 700))
+        topLeft_BW = self.image_manipulator.create_init_boxes(no_background,
+                                                              (100, 200), (280, 120), (50, 1080), (144, 700))
 
 # Find the contours of the cars
         hulls = self.lucas.filter_Contours(topLeft_BW, 100, 500)
@@ -85,7 +77,8 @@ class communication():
         centers_of_hulls = self.lucas.get_centroids(hulls)
 # Track the cars
         self.lucas.trackCars(centers_of_hulls)
-        #print(len(centers_of_hulls))
+        #print(len(self.lucas.tracked_cars))
+
         if len(self.lucas.tracked_cars) > 1:
              for car in self.lucas.tracked_cars:
                  x_y = Num()
@@ -260,7 +253,7 @@ class receiver:
         topBox = image.copy()
         mask = np.zeros_like(image)
         cv2.rectangle(mask, point1, point2, (255, 255, 255), -1)
-        cv2.rectangle(mask, point3, point4, (255, 255, 255), -1)
+        #cv2.rectangle(mask, point3, point4, (255, 255, 255), -1)
         topBox = cv2.bitwise_and(topBox, mask)
         return topBox
     def stabilize_image(self, image, crop, mask, point1, point2):
@@ -299,8 +292,6 @@ class LK:
         self.mask = np.zeros_like(image)
         self.old_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     def LKStep(self, newFrame, manipulation_image):
-
-        print("Tracked cars : " + str(len(self.tracked_cars)) + "  " + str(self.tracked_cars))
         self.append_cars()
         for i in range (0, len(self.kalman_list)):
             self.kalman_list[i].predict_pose()
@@ -311,7 +302,8 @@ class LK:
             cv2.putText(manipulation_image, "car number: " + str(self.kalman_list[i].ID) + " Speed is: " + str(speed),
                         (int(x + 800), int(y + 320)),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
-            image = cv2.circle(manipulation_image, (int(x + 800), int(y + 320)), 5, self.color[i].tolist(), -1)
+        for i in range(0, len(self.tracked_cars)):
+            image = cv2.circle(manipulation_image, (int(self.tracked_cars[i][0] + 800), int(self.tracked_cars[i][1] + 320)), 5, self.color[i].tolist(), -1)
 
 
         # calculate optical flow
@@ -329,13 +321,16 @@ class LK:
         for i, (new, old) in enumerate(zip(good_new, good_old)):
             a, b = new.ravel()
             c, d = old.ravel()
-            self.mask = cv2.line(self.mask, (a, b), (c, d), self.color[i].tolist(), 2)
+            image = cv2.line(image, (a, b), (c, d), self.color[i].tolist(), 2)
 
 
         self.old_gray = new_gray
         self.p0 = good_new.reshape(-1, 1, 2)
 
         return image
+    def wannabe_LKstep(self, masked_image):
+
+        pass
     def append_cars(self):
         temp_array = []
         for car in self.p0:
@@ -344,13 +339,13 @@ class LK:
             if not self.matches(temp_array[i], self.tracked_cars):
                 self.tracked_cars.append(temp_array[i])
                 ct = CarTracker(25, self.ID, temp_array[i][0], temp_array[i][1])
-
+                #print(temp_array[i][0], temp_array[i][1] , "number of tracked cars: " , len(self.tracked_cars))
                 self.kalman_list.append(ct)
                 self.ID += 1
     def matches(self, point, array_to_find_a_match):
         for i in range (0, len(array_to_find_a_match)):
             dist = self.Euclidean_distance(point, array_to_find_a_match[i])
-            if dist < 10:
+            if dist < 20:
                 array_to_find_a_match[i] = point
                 return True
         return False
@@ -360,15 +355,17 @@ class LK:
     def check_for_p0_dup(self, new_cars):
         if len(self.p0) > 0:
             for i in range(0, len(new_cars)):
-                if not (self.is_point_being_tracked_in_p0(new_cars[i])):
+                if not (self.is_point_being_tracked(new_cars[i])):
                     self.add_point(new_cars[i])
         else:
             self.add_point(new_cars)
-    def is_point_being_tracked_in_p0(self, point):
+    def is_point_being_tracked(self, point):
         for tracked_car in self.p0:
             distance = self.Euclidean_distance(tracked_car[0], point)
-            if distance < 20:
+
+            if distance < 10:
                 return True
+        print("New point found!")
         return False
     def filter_Contours(self, image, areaMin, areaMax):
         contours, hierarchy = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)

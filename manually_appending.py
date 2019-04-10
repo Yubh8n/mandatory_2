@@ -4,6 +4,7 @@ import sys
 import math
 from filterpy.kalman import KalmanFilter
 from filterpy.common import Q_discrete_white_noise
+import rospy
 import rosbag
 import matplotlib.pyplot as plt
 
@@ -61,57 +62,6 @@ class CarTracker:
         return np.sqrt(self.p_x.x[1]**2+self.p_y.x[1]**2)
     def get_ID(self):
         return self.ID
-class CarLocatorNode():
-    dt = 1./18.0 # update to the correct value
-    got_measurement = False
-    first_run = True
-    prediction_time = 0.0
-
-    def __init__(self):
-        rospy.init_node('single_car_locator')
-        self.sub_mes = rospy.Subscriber("/car_pose_measurements", PointStamped, self.measurement_callback) # change to your message type!
-        self.pub_update = rospy.Publisher('/kalman_filter/update_pose', PoseWithCovarianceStamped, queue_size=5) # change to your message type!
-        self.pub_predict = rospy.Publisher('/kalman_filter/predict_pose', PoseWithCovarianceStamped, queue_size=5) # change to your message type!
-        self.pose_msg = PoseWithCovarianceStamped()
-        #I have chosen to run this 10 times faster but  2x measurement rate would also work
-        rospy.Timer(rospy.Duration(self.dt*10.), self.timer_callback)
-        rospy.spin()
-    def timer_callback(self, event):
-        print 'Timer called at ' + str(rospy.get_time()) #remove when running live with real data
-        if(not self.first_run):
-            # either we have received a measurement or more than 1.5 sample period has passed
-            if(self.got_measurement or ((rospy.get_time()-self.prediction_time)>(1.5*self.dt))):
-                print "predict_pose()"  #remove when running live with real data
-                self.ct.predict_pose() # might need a mutex
-                self.got_measurement = False #clear from last measurement
-                self.prediction_time = rospy.get_time()
-                self.pose_msg.header = self.pose_msg.header # update to time in the future (add correct code !!!)
-
-                # publishing part of the code
-                self.pose_msg.header.frame_id = str(ct.get_ID())
-                [self.pose_msg.pose.pose.position.x, self.pose_msg.pose.pose.position.y] = self.ct.get_position()
-                [cor_x, cor_y] = self.ct.get_current_error()
-                self.pose_msg.pose.covariance[0] = cor_x
-                self.pose_msg.pose.covariance[3] = cor_y
-                self.pub_predict.publish(self.pose_msg)
-    def measurement_callback(self, msg):
-        self.pose_msg.header = msg.header # copy the time
-        self.got_measurement = True
-        if(self.first_run):
-            self.ct = CarTracker(self.dt,1,msg.point.x,msg.point.y) # since we have a single car the ID is set to 1
-            self.first_run = False # we have received the first measurement
-            print "INIT tracker"  #remove when running live with real data
-        else:
-            self.ct.update_pose(msg.point.x,msg.point.y) # might need a mutex (same as above)
-            print "update_pose()"  #remove when running live with real data
-
-        # publishing part of the code
-        self.pose_msg.header.frame_id = str(ct.get_ID())
-        [self.pose_msg.pose.pose.position.x, self.pose_msg.pose.pose.position.y] = self.ct.get_position()
-        [cor_x, cor_y] = self.ct.get_current_error()
-        self.pose_msg.pose.covariance[0] = cor_x
-        self.pose_msg.pose.covariance[3] = cor_y
-        self.pub_update.publish(self.pose_msg)
 class VideoStabilizer():
     def __init__(self):
         self.has_seen_first_frame = False
@@ -178,11 +128,6 @@ class various_functions:
         for x_y in array:
             f.write(str(x_y))
         f.close()
-    def on_mouse(self, event, x, y, flag, param):
-        if event == cv2.EVENT_LBUTTONDOWN:
-            print(x, y)
-            pass
-            Mouse_array.append(str(x) + " " + str(y) + " ")
     def calc_std_dev(self, array1, array2):
         if (len(array1) != len(array2)):
             "Array lengths do not match!"
@@ -201,13 +146,8 @@ class various_functions:
         cv2.namedWindow(windowName, cv2.WINDOW_NORMAL)
         cv2.imshow(windowName, image)
     def get_warp(self, correct_to, correct_from, image):
-        #query_pts = np.float32([kp_image[m.queryIdx].pt for m in correct_to]).reshape(-1, 1, 2)
-        #train_pts = np.float32([kp_grayframe[m.trainIdx].pt for m in correct_from]).reshape(-1, 1, 2)
-        #cv2.UMat(np.array([],
-        #M = cv2.getPerspectiveTransform(correct_from, correct_to)
         h, status = cv2.findHomography(correct_to, correct_from)
         img = cv2.warpPerspective(image, h, (1920,1080))
-        #img = cv2.warpPerspective(image, M, (1920,1080))
         return img
 class receiver:
     def __init__(self):
@@ -254,9 +194,6 @@ class LK:
         self.ID = 0
 
         self.kalman_list = []
-    def track_car(self, carnumber):
-        if len(lucas.p0) >= carnumber-1:
-            Car_nr_3.append(lucas.p0[carnumber][0])
     def Euclidean_distance(self, point1, point2):
         return math.sqrt((point1[0]-point2[0])**2+(point1[1]-point2[1])**2)
     def initialize_LK_image(self, image):
@@ -339,14 +276,13 @@ class LK:
         filtered_contours = []
         hulls = []
         for i in range(0, np.alen(contours)):
-            # print len(contours)
             if (cv2.contourArea(contours[i]) > areaMin and cv2.contourArea(contours[i]) < areaMax):
                 filtered_contours.append(contours[i])
 
         for i in range(0, len(filtered_contours)):
             hull = cv2.convexHull(filtered_contours[i])
             hulls.append(hull)
-        #return hulls
+        return hulls
     def get_centroids(self, contours):
         fixed_hulls = []
         for i in range(0, np.alen(contours)):
@@ -354,7 +290,7 @@ class LK:
             cX = int(m1["m10"] / m1["m00"])
             cY = int(m1["m01"] / m1["m00"])
             fixed_hulls.append((cX, cY))
-        #return fixed_hulls
+        return fixed_hulls
     def trackCars(self, centroid):
         cars_to_track = []
         if (len(centroid) > 1):
@@ -405,20 +341,22 @@ def main(args):
         org_image = image_manipulator.stabilize_image(frame, 0, 0, (320,1080), (800,1200))
         lucas_image = lucas.LKStep(mask, org_image)
         no_background = image_manipulator.remove_background(mask)
+        warp = vf.get_warp(org_points,new_points, frame)
 
 #Create a Top left detector box both color and BW
         topLeft_BW = image_manipulator.create_init_boxes(no_background, (100, 200), (280, 120), (50, 1080), (144, 700))
 
 #Find the contours of the cars
-        hulls = lucas.filter_Contours(topLeft_BW, 60, 500)
+        hulls = lucas.filter_Contours(topLeft_BW, 100, 500)
         cv2.drawContours(lucas_image, hulls, -1, (255,0,0), 1)
         centers_of_hulls = lucas.get_centroids(hulls)
+        print(len(centers_of_hulls))
 #Track the cars
         lucas.trackCars(centers_of_hulls)
 
 #show various images.
         #vf.showImages("Lucas kanade overlay", lucas_image)
-        vf.showImages("Original image", org_image)
+        vf.showImages("Original image", warp)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     cv2.destroyAllWindows()

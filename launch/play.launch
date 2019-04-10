@@ -1,8 +1,9 @@
 <launch>
   <include file="$(find video_stream_opencv)/launch/camera.launch" >
     <arg name="camera_name" value="data_provider" />
-
     <arg name="fps" value="30" />
+    <arg name="set_camera_fps" value="30" />
+
     <arg name="video_stream_provider" value="$(find video_stabilizer_node)/data/youtube_test.mp4" /> 
   </include>
  

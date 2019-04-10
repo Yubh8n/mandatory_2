@@ -103,8 +103,6 @@ def homo_compose_a(img_points):
             A[i].append(0)
             A[i].append(1)
     return A
-
-
 def homography_transform(img_points, obj_points):
     H = []
     for i in range(0,4):

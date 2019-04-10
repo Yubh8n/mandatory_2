@@ -23,10 +23,10 @@ class CarTracker:
         self.p_y.H = np.array([[1, 0., 0.]])
 
 
-        self.R_x_std = 10  # update to the correct value
-        self.Q_x_std = 7.  # update to the correct value
-        self.R_y_std = 10  # update to the correct value
-        self.Q_y_std = 7.  # update to the correct value
+        self.R_x_std = 0.00001  # update to the correct value
+        self.Q_x_std = 0.7  # update to the correct value
+        self.R_y_std = 0.00001  # update to the correct value
+        self.Q_y_std = 0.7  # update to the correct value
 
         self.p_y.Q = Q_discrete_white_noise(dim=3, dt=dt, var=self.Q_y_std ** 2)
         self.p_x.Q = Q_discrete_white_noise(dim=3, dt=dt, var=self.Q_x_std ** 2)
@@ -42,7 +42,6 @@ class CarTracker:
         self.time_since_last_update = 0.0
 
         self.p_y.R *= self.R_y_std ** 2
-
     def update_pose(self,position_x, position_y):
         self.time_since_last_update = 0.0 # reset time since last update
         self.p_x.update([[position_x]])
@@ -200,8 +199,16 @@ class various_functions:
         return temp_array
     def showImages(self, windowName, image):
         cv2.namedWindow(windowName, cv2.WINDOW_NORMAL)
-        cv2.setMouseCallback(windowName, self.on_mouse)
         cv2.imshow(windowName, image)
+    def get_warp(self, correct_to, correct_from, image):
+        #query_pts = np.float32([kp_image[m.queryIdx].pt for m in correct_to]).reshape(-1, 1, 2)
+        #train_pts = np.float32([kp_grayframe[m.trainIdx].pt for m in correct_from]).reshape(-1, 1, 2)
+        #cv2.UMat(np.array([],
+        #M = cv2.getPerspectiveTransform(correct_from, correct_to)
+        h, status = cv2.findHomography(correct_to, correct_from)
+        img = cv2.warpPerspective(image, h, (1920,1080))
+        #img = cv2.warpPerspective(image, M, (1920,1080))
+        return img
 class receiver:
     def __init__(self):
         self.stabilizer = VideoStabilizer()
@@ -210,10 +217,11 @@ class receiver:
 
 
         #create left lane init box
-    def create_init_boxes(self, image, point1, point2):
+    def create_init_boxes(self, image, point1, point2, point3, point4):
         topBox = image.copy()
         mask = np.zeros_like(image)
         cv2.rectangle(mask, point1, point2, (255, 255, 255), -1)
+        #cv2.rectangle(mask, point3, point4, (255, 255, 255), -1)
         topBox = cv2.bitwise_and(topBox, mask)
         return topBox
     def stabilize_image(self, image, crop, mask, point1, point2):
@@ -223,7 +231,6 @@ class receiver:
             frame = cv2.bitwise_and(frame, self.mask)
         if crop != 0:
             frame = frame[point1[0]:point1[1], point2[0]:point2[1]]
-            #frame = frame[320:1080, 800:1200]
         return frame
     def remove_background(self, mask):
         #Takes in BW, removes the background
@@ -248,7 +255,6 @@ class LK:
 
         self.kalman_list = []
     def track_car(self, carnumber):
-        # P0 to track: 3!!!
         if len(lucas.p0) >= carnumber-1:
             Car_nr_3.append(lucas.p0[carnumber][0])
     def Euclidean_distance(self, point1, point2):
@@ -265,15 +271,8 @@ class LK:
             self.kalman_list[i].update_pose(self.tracked_cars[i][0].copy(), self.tracked_cars[i][1].copy())
 
             x, y = self.kalman_list[i].get_position()
-
-            #print("Tracked cars : " + str(len(self.tracked_cars)) + "  " + str(self.tracked_cars))
-            #print("Kalman cars: " + str(len(self.kalman_list)) + "  " + str(x) + "   " + str(y))
-
-
-
-            #x, y = (self.tracked_cars[i][0], self.tracked_cars[i][1])
             speed = self.kalman_list[i].get_total_speed()
-            cv2.putText(manipulation_image, "car number: " + str(self.kalman_list[i].ID) + " Speed is: " + str(self.kalman_list[i].get_total_speed()),
+            cv2.putText(manipulation_image, "car number: " + str(self.kalman_list[i].ID) + " Speed is: " + str(speed),
                         (int(x + 800), int(y + 320)),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
             image = cv2.circle(manipulation_image, (int(x + 800), int(y + 320)), 5, self.color[i].tolist(), -1)
@@ -329,60 +328,12 @@ class LK:
                     self.add_point(new_cars[i])
         else:
             self.add_point(new_cars)
-    def is_point_being_tracked(self, point):
-        for j in range(0, len(self.init_cars)):
-            distance = self.Euclidean_distance(self.init_cars[j], point)
-            #print(distance)
-            if distance < 20:
-                self.init_cars[j] = point
-                return True
-        return False
     def is_point_being_tracked_in_p0(self, point):
         for tracked_car in self.p0:
             distance = self.Euclidean_distance(tracked_car[0], point)
             if distance < 20:
                 return True
         return False
-    def do_blobdetection(self, image):
-        ret, thresh = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY)
-        # You need to choose 4 or 8 for connectivity type
-        connectivity = 8
-        # Perform the operation
-        output = cv2.connectedComponentsWithStats(thresh, connectivity, cv2.CV_32S)
-        # Get the results
-        # The first cell is the number of labels
-        num_labels = output[0]
-        # The second cell is the label matrix
-        labels = output[1]
-        # The third cell is the stat matrix
-        stats = output[2]
-        # The fourth cell is the centroid matrix
-        centroids = output[3]
-
-        newPoints = []
-        counter = 0
-
-        for point in centroids:
-            if not self.is_point_being_tracked(point):
-                if stats[counter, cv2.CC_STAT_AREA] > 50:
-                    bbox = self.create_bbox_with_stats(stats, counter)
-                    newPoints.append(bbox)
-            counter = counter + 1
-
-        return newPoints
-    def create_bbox_with_stats(self, stats, number):
-        left_x = stats[number, cv2.CC_STAT_LEFT]
-        top_y = stats[number, cv2.CC_STAT_TOP]
-        width = stats[number, cv2.CC_STAT_WIDTH]
-        height = stats[number, cv2.CC_STAT_HEIGHT]
-
-        bbox = (left_x, top_y, width, height)
-
-        return bbox
-    def draw_circles(self, image, array_of_x_y_coords):
-        for xy in array_of_x_y_coords:
-            #print(xy)
-            cv2.circle(image, (xy[0],xy[1]), 3, (0, 0, 255), -1)
     def filter_Contours(self, image, areaMin, areaMax):
         contours, hierarchy = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         filtered_contours = []
@@ -395,7 +346,7 @@ class LK:
         for i in range(0, len(filtered_contours)):
             hull = cv2.convexHull(filtered_contours[i])
             hulls.append(hull)
-        return hulls
+        #return hulls
     def get_centroids(self, contours):
         fixed_hulls = []
         for i in range(0, np.alen(contours)):
@@ -403,7 +354,7 @@ class LK:
             cX = int(m1["m10"] / m1["m00"])
             cY = int(m1["m01"] / m1["m00"])
             fixed_hulls.append((cX, cY))
-        return fixed_hulls
+        #return fixed_hulls
     def trackCars(self, centroid):
         cars_to_track = []
         if (len(centroid) > 1):
@@ -422,7 +373,11 @@ class LK:
         if (len(cars_to_track) != 0):
             self.check_for_p0_dup(cars_to_track)
 
+
 def main(args):
+    org_points = cv2.UMat(np.array([[1126,861], [1264,451], [866,342], [321,852]] ,dtype=np.uint16))
+    new_points = cv2.UMat(np.array([[1126,861], [1238,528], [866,342], [728,856]] ,dtype=np.uint16))
+
 #Create objects
     vf = various_functions()
     image_manipulator = receiver()
@@ -439,9 +394,10 @@ def main(args):
 #import frame and create a box for oncomming cars
     ret, frame = image_manipulator.cap.read()
     mask = image_manipulator.stabilize_image(frame, 1, 1,  (320,1080), (800,1200))
-    topLeft_initbox = image_manipulator.create_init_boxes(mask, (100, 200), (280, 120))
-    lucas.initialize_LK_image(topLeft_initbox) #This might have something to do with the weird initial looks
+    topLeft_initbox = image_manipulator.create_init_boxes(mask, (100, 200), (280, 120), (50, 1080), (144, 700))
+    lucas.initialize_LK_image(topLeft_initbox)
 
+###############Loopity Loop###############
     while (True):
 #read in the image, and stabilize plus crop
         ret, frame = cap.read()
@@ -451,8 +407,7 @@ def main(args):
         no_background = image_manipulator.remove_background(mask)
 
 #Create a Top left detector box both color and BW
-        topLeft_BW = image_manipulator.create_init_boxes(no_background, (100, 200), (280, 120))
-        topLeft_initbox = image_manipulator.create_init_boxes(mask, (100, 200), (280, 120))
+        topLeft_BW = image_manipulator.create_init_boxes(no_background, (100, 200), (280, 120), (50, 1080), (144, 700))
 
 #Find the contours of the cars
         hulls = lucas.filter_Contours(topLeft_BW, 60, 500)
@@ -460,20 +415,14 @@ def main(args):
         centers_of_hulls = lucas.get_centroids(hulls)
 #Track the cars
         lucas.trackCars(centers_of_hulls)
+
 #show various images.
-        vf.showImages("Lucas kanade overlay", lucas_image)
+        #vf.showImages("Lucas kanade overlay", lucas_image)
         vf.showImages("Original image", org_image)
-        #cv2.imshow('frame', no_background)
-        #cv2.imshow('frame', lucas_image)
-        #cv2.imshow('frame', topLeft_initbox)
-        #cv2.imshow('frame', topLeft_BW)
-        #cv2.imshow('frame', image)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     cv2.destroyAllWindows()
     cap.release()
-    #print(Car_nr_3)
-    #export_file("Car_3.txt", Mouse_array)
 
 if __name__ == '__main__':
     print("Launching!")

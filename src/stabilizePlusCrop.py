@@ -11,7 +11,6 @@ import rospy
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 roslib.load_manifest('mandatory_2')
-from mandatory_2.msg import Num, Num_array
 import rospkg
 from mandatory_2.msg import Num, Num_array
 
@@ -438,8 +437,9 @@ class own_tracker:
 
     def draw_circles(self, image, array_of_x_y_coords):
         for i in range (0, len(array_of_x_y_coords)):
-            cv2.circle(image, (array_of_x_y_coords[i][0], array_of_x_y_coords[i][1]), 3, (0, 0, 255), -1)
-            image = cv2.putText(image, "car number: " + str(i), (int(array_of_x_y_coords[i][0]), int(array_of_x_y_coords[i][1])), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+            if array_of_x_y_coords[i][1] < 600:
+                cv2.circle(image, (array_of_x_y_coords[i][0], array_of_x_y_coords[i][1]), 3, (0, 0, 255), -1)
+                image = cv2.putText(image, "car number: " + str(i), (int(array_of_x_y_coords[i][0]), int(array_of_x_y_coords[i][1])), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 
 
     def update(self, array_of_centroids):
@@ -471,7 +471,7 @@ class own_tracker:
             self.add_point(new_cars)
 
     def is_point_being_tracked(self, point):
-        tresh = 10
+        tresh = 15
         for i in range (0, len(self.tracked_cars)):
             dist_array = []
             any_below_tresh = False
@@ -485,7 +485,7 @@ class own_tracker:
                 for k in range (1, len(dist_array)):
                     if dist_array[k] < dist_array[k-1]:
                         lowest_dist = k
-                self.tracked_cars[i] = dist_array[k]
+                self.tracked_cars[i] = dist_array[lowest_dist]
 
 
 

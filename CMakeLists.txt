@@ -51,6 +51,8 @@ add_message_files(
   FILES
   Num.msg
   Num_array.msg
+  Kalman_feedback.msg
+  Kalman_feedback_array.msg
 )
 
 ## Generate services in the 'srv' folder

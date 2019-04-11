@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/../manually_appending.py" line="309" mnemonic="7" />
-  </component>
   <component name="ChangeListManager">
     <list default="true" id="758d9d99-3786-4ea4-9851-9bc0638fa479" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Car_3 _without_brackets.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Car_3.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Man (copy).txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Man.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Manual.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Martin_car_tracker.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Without_brackets.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../manually_appending.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lecture10.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cam_test.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/filename.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kalman.py" beforeDir="false" afterPath="$PROJECT_DIR$/kalman.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mask.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/stabilizePlusCrop.py" beforeDir="false" afterPath="$PROJECT_DIR$/stabilizePlusCrop.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.bag" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tuple_test.py" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,108 +31,21 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../manually_appending.py">
+        <entry file="file://$PROJECT_DIR$/stabilizePlusCrop.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="356" column="9" selection-start-line="356" selection-start-column="9" selection-end-line="356" selection-end-column="9" />
-              <folding>
-                <element signature="e#0#18#0" expanded="true" />
-                <element signature="e#419#2377#0" />
-                <element signature="e#1547#1691#0" />
-                <element signature="e#1728#1850#0" />
-                <element signature="e#1895#1929#0" />
-                <element signature="e#1966#2003#0" />
-                <element signature="e#2045#2092#0" />
-                <element signature="e#2132#2220#0" />
-                <element signature="e#2251#2265#0" />
-                <element signature="e#2294#5359#0" />
-                <element signature="e#5389#7054#0" />
-                <element signature="e#5417#5815#0" />
-                <element signature="e#7225#9190#0" />
-                <element signature="e#7112#7133#0" />
-                <element signature="e#7179#7537#0" />
-                <element signature="e#7590#7687#0" />
-                <element signature="e#7746#7881#0" />
-                <element signature="e#7934#8236#0" />
-                <element signature="e#8282#8421#0" />
-                <element signature="e#8475#8615#0" />
-                <element signature="e#8664#8939#0" />
-                <element signature="e#9270#9578#0" />
-                <element signature="e#9626#9784#0" />
-                <element signature="e#11104#11188#0" />
-                <element signature="e#10587#10654#0" />
-                <element signature="e#10705#10801#0" />
-                <element signature="e#10847#12594#0" />
-                <element signature="e#12576#13160#0" />
-                <element signature="e#13049#13296#0" />
-                <element signature="e#13903#14025#0" />
-                <element signature="e#14076#14314#0" />
-                <element signature="e#14541#14717#0" />
-              </folding>
+            <state relative-caret-position="15">
+              <caret line="1" column="28" selection-start-line="1" selection-start-column="23" selection-end-line="1" selection-end-column="28" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/stabilizePlusCrop.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="260">
-              <caret line="26" column="8" selection-start-line="26" selection-start-column="8" selection-end-line="26" selection-end-column="8" />
-              <folding>
-                <element signature="e#22#59#0" expanded="true" />
-                <element signature="e#1377#2592#0" />
-                <element signature="e#4079#4340#0" />
-                <element signature="e#4014#4314#0" />
-                <element signature="e#710#2708#0" />
-                <element signature="e#5541#7206#0" />
-                <element signature="e#6015#7206#0" />
-                <element signature="e#7236#9265#0" />
-                <element signature="e#7264#7285#0" />
-                <element signature="e#7331#7689#0" />
-                <element signature="e#7742#7839#0" />
-                <element signature="e#8086#8388#0" />
-                <element signature="e#8434#8573#0" />
-                <element signature="e#9286#10468#0" />
-                <element signature="e#9314#9589#0" />
-                <element signature="e#9670#9926#0" />
-                <element signature="e#10001#10262#0" />
-                <element signature="e#10310#10468#0" />
-                <element signature="e#11441#16983#0" />
-                <element signature="e#11243#11310#0" />
-                <element signature="e#11361#11457#0" />
-                <element signature="e#13615#13862#0" />
-                <element signature="e#14374#14550#0" />
-                <element signature="e#14615#15146#0" />
-                <element signature="e#15194#15454#0" />
-                <element signature="e#16328#16983#0" />
-                <element signature="e#16107#16241#0" />
-                <element signature="e#18407#18445#0" />
-                <element signature="e#4064#4181#0" />
-                <element signature="e#4224#4286#0" />
-                <element signature="e#8891#9138#0" />
-                <element signature="e#9179#9301#0" />
-                <element signature="e#9352#9590#0" />
-                <element signature="e#9644#9906#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/kalman.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="272">
-              <caret line="75" column="9" selection-start-line="75" selection-start-column="9" selection-end-line="75" selection-end-column="9" />
+            <state relative-caret-position="165">
+              <caret line="11" column="35" lean-forward="true" selection-start-line="11" selection-start-column="35" selection-end-line="11" selection-end-column="35" />
               <folding>
                 <element signature="e#22#59#0" expanded="true" />
-                <element signature="e#347#1507#0" />
-                <element signature="e#1566#1710#0" />
-                <element signature="e#1747#1869#0" />
-                <element signature="e#1914#1948#0" />
-                <element signature="e#1985#2022#0" />
-                <element signature="e#2064#2111#0" />
-                <element signature="e#2151#2239#0" />
-                <element signature="e#2270#2284#0" />
               </folding>
             </state>
           </provider>
@@ -134,21 +62,7 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>--</find>
-      <find>topLeft_BW</find>
-      <find>array</find>
-      <find>LKStep</find>
-      <find>self.tracked_car</find>
-      <find>self.tracked</find>
-      <find>showim</find>
-      <find>counter</find>
-      <find>newPoint</find>
-      <find>self.ct</find>
-      <find>self.number</find>
-      <find>ct.</find>
-      <find>get_current_e</find>
       <find>sub</find>
-      <find>self.tracked_cars</find>
       <find>add_point</find>
       <find>homo</find>
       <find>get_warp</find>
@@ -159,12 +73,30 @@
       <find>cv2.imshow</find>
       <find>standard</find>
       <find>100</find>
-      <find>print</find>
       <find>check_for</find>
       <find>trackCars</find>
       <find>get_centroids</find>
       <find>filter_</find>
+      <find>stabilize_image</find>
+      <find>receiv</find>
+      <find>self.path</find>
+      <find>recei</find>
+      <find>is_point</find>
+      <find>euc</find>
+      <find>image_pub</find>
+      <find>publish</find>
+      <find>self.tracked_cars</find>
+      <find>new_car</find>
+      <find>self.new_car</find>
+      <find>tracked_cars</find>
+      <find>draw_circles</find>
+      <find>if</find>
+      <find>print</find>
     </findStrings>
+    <replaceStrings>
+      <replace />
+      <replace>tracked_cars</replace>
+    </replaceStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
@@ -183,9 +115,9 @@
         <option value="$PROJECT_DIR$/../../mavlink_lora/scripts/download_gps_cords.py" />
         <option value="$PROJECT_DIR$/../../mavlink_lora/scripts/qgc_generate_plan_example.py" />
         <option value="$PROJECT_DIR$/Lecture10.py" />
-        <option value="$PROJECT_DIR$/kalman.py" />
         <option value="$PROJECT_DIR$/../manually_appending.py" />
         <option value="$PROJECT_DIR$/stabilizePlusCrop.py" />
+        <option value="$PROJECT_DIR$/kalman.py" />
       </list>
     </option>
   </component>
@@ -201,6 +133,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -212,12 +145,11 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../Martin_car_tracker.py" />
-    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+    <property name="settings.editor.selected.configurable" value="Errors" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -365,18 +297,25 @@
       <option name="project" value="LOCAL" />
       <updated>1554814892959</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Tracking work, Kalman filter works semi.&#10;No matcher.">
+      <created>1554987024920</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1554987024920</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="67" y="25" width="1299" height="743" extended-state="6" />
+    <frame x="0" y="25" width="1366" height="678" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18338558" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.183172" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32899022" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32786885" />
       <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.3257329" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
@@ -412,7 +351,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Something which works! :o" />
-    <option name="LAST_COMMIT_MESSAGE" value="Something which works! :o" />
+    <MESSAGE value="Tracking work, Kalman filter works semi.&#10;No matcher." />
+    <option name="LAST_COMMIT_MESSAGE" value="Tracking work, Kalman filter works semi.&#10;No matcher." />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/imageImport.py" />
@@ -437,9 +377,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../Steven.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/../Steven.py" />
     <entry file="file:///usr/lib/python2.7/dist-packages/rospkg/rospack.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
@@ -530,104 +468,29 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/kalman.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="75" column="9" selection-start-line="75" selection-start-column="9" selection-end-line="75" selection-end-column="9" />
-          <folding>
-            <element signature="e#22#59#0" expanded="true" />
-            <element signature="e#347#1507#0" />
-            <element signature="e#1566#1710#0" />
-            <element signature="e#1747#1869#0" />
-            <element signature="e#1914#1948#0" />
-            <element signature="e#1985#2022#0" />
-            <element signature="e#2064#2111#0" />
-            <element signature="e#2151#2239#0" />
-            <element signature="e#2270#2284#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../manually_appending.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="356" column="9" selection-start-line="356" selection-start-column="9" selection-end-line="356" selection-end-column="9" />
+        <state relative-caret-position="4275">
+          <caret line="292" column="9" selection-start-line="292" selection-start-column="9" selection-end-line="292" selection-end-column="9" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
-            <element signature="e#419#2377#0" />
-            <element signature="e#1547#1691#0" />
-            <element signature="e#1728#1850#0" />
-            <element signature="e#1895#1929#0" />
-            <element signature="e#1966#2003#0" />
-            <element signature="e#2045#2092#0" />
-            <element signature="e#2132#2220#0" />
-            <element signature="e#2251#2265#0" />
-            <element signature="e#2294#5359#0" />
-            <element signature="e#5389#7054#0" />
-            <element signature="e#5417#5815#0" />
-            <element signature="e#7225#9190#0" />
-            <element signature="e#7112#7133#0" />
-            <element signature="e#7179#7537#0" />
-            <element signature="e#7590#7687#0" />
-            <element signature="e#7746#7881#0" />
-            <element signature="e#7934#8236#0" />
-            <element signature="e#8282#8421#0" />
-            <element signature="e#8475#8615#0" />
-            <element signature="e#8664#8939#0" />
-            <element signature="e#9270#9578#0" />
-            <element signature="e#9626#9784#0" />
-            <element signature="e#11104#11188#0" />
-            <element signature="e#10587#10654#0" />
-            <element signature="e#10705#10801#0" />
-            <element signature="e#10847#12594#0" />
-            <element signature="e#12576#13160#0" />
-            <element signature="e#13049#13296#0" />
-            <element signature="e#13903#14025#0" />
-            <element signature="e#14076#14314#0" />
-            <element signature="e#14541#14717#0" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/stabilizePlusCrop.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="260">
-          <caret line="26" column="8" selection-start-line="26" selection-start-column="8" selection-end-line="26" selection-end-column="8" />
+        <state relative-caret-position="15">
+          <caret line="1" column="28" selection-start-line="1" selection-start-column="23" selection-end-line="1" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kalman.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="11" column="35" lean-forward="true" selection-start-line="11" selection-start-column="35" selection-end-line="11" selection-end-column="35" />
           <folding>
             <element signature="e#22#59#0" expanded="true" />
-            <element signature="e#1377#2592#0" />
-            <element signature="e#4079#4340#0" />
-            <element signature="e#4014#4314#0" />
-            <element signature="e#710#2708#0" />
-            <element signature="e#5541#7206#0" />
-            <element signature="e#6015#7206#0" />
-            <element signature="e#7236#9265#0" />
-            <element signature="e#7264#7285#0" />
-            <element signature="e#7331#7689#0" />
-            <element signature="e#7742#7839#0" />
-            <element signature="e#8086#8388#0" />
-            <element signature="e#8434#8573#0" />
-            <element signature="e#9286#10468#0" />
-            <element signature="e#9314#9589#0" />
-            <element signature="e#9670#9926#0" />
-            <element signature="e#10001#10262#0" />
-            <element signature="e#10310#10468#0" />
-            <element signature="e#11441#16983#0" />
-            <element signature="e#11243#11310#0" />
-            <element signature="e#11361#11457#0" />
-            <element signature="e#13615#13862#0" />
-            <element signature="e#14374#14550#0" />
-            <element signature="e#14615#15146#0" />
-            <element signature="e#15194#15454#0" />
-            <element signature="e#16328#16983#0" />
-            <element signature="e#16107#16241#0" />
-            <element signature="e#18407#18445#0" />
-            <element signature="e#4064#4181#0" />
-            <element signature="e#4224#4286#0" />
-            <element signature="e#8891#9138#0" />
-            <element signature="e#9179#9301#0" />
-            <element signature="e#9352#9590#0" />
-            <element signature="e#9644#9906#0" />
           </folding>
         </state>
       </provider>
